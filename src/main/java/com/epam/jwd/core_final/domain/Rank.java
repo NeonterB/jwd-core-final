@@ -2,6 +2,8 @@ package com.epam.jwd.core_final.domain;
 
 import com.epam.jwd.core_final.exception.UnknownEntityException;
 
+import java.util.Arrays;
+
 public enum Rank implements BaseEntity {
     TRAINEE(1L),
     SECOND_OFFICER(2L),
@@ -24,7 +26,7 @@ public enum Rank implements BaseEntity {
      */
     @Override
     public String getName() {
-        return null;
+        return this.name();
     }
 
     /**
@@ -33,6 +35,9 @@ public enum Rank implements BaseEntity {
      * @throws UnknownEntityException if such id does not exist
      */
     public static Rank resolveRankById(int id) {
-        return null;
+        return Arrays.stream(Rank.values())
+                .filter(rank -> rank.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new UnknownEntityException("Rank", id));
     }
 }

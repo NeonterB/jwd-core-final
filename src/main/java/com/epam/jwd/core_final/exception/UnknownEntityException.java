@@ -11,7 +11,7 @@ public class UnknownEntityException extends RuntimeException {
         this.args = null;
     }
 
-    public UnknownEntityException(String entityName, Object[] args) {
+    public UnknownEntityException(String entityName, Object... args) {
         super();
         this.entityName = entityName;
         this.args = args;
