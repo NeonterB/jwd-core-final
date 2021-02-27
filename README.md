@@ -10,6 +10,13 @@
 * Console input should be done using java.util.Scanner
 * Input files contains structure description, starts with hash
 
+! NEW REQUIREMENTS 
+* Flight mission now has a new fields
+* New cacheable entity was introduced
+* New space map was introduced with the corresponding service
+* You have to compute flight enddate and distance (distance between [i][j] and [i][j+1] = 1; [i][j] and [i+1][j+1] = sqrt(2). 
+  Use Pythagorean theorem. It took 1s time for 1 distance)
+
 ###Mandatory tasks: 
 * In domain package update entity based on requirements
 * Implements service interfaces
