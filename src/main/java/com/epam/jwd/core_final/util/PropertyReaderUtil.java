@@ -28,6 +28,7 @@ public final class PropertyReaderUtil {
 
         try(InputStream input = new FileInputStream(propertiesFileName)){
             properties.load(input);
+            appProperties.setBaseDir(properties.getProperty("baseDir"));
             appProperties.setInputRootDir(properties.getProperty("inputRootDir"));
             appProperties.setOutputRootDir(properties.getProperty("outputRootDir"));
             appProperties.setCrewFileName(properties.getProperty("crewFileName"));

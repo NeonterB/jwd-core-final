@@ -17,6 +17,7 @@ package com.epam.jwd.core_final.domain;
 public class ApplicationProperties {
     private static ApplicationProperties instance = new ApplicationProperties();
 
+    private String baseDir;
     private String inputRootDir;
     private String outputRootDir;
     private String crewFileName;
@@ -26,62 +27,55 @@ public class ApplicationProperties {
     private Integer fileRefreshRate;
     private String dateTimeFormat;
 
-    private ApplicationProperties(){}
+    private ApplicationProperties() {
+    }
 
-    public static ApplicationProperties getInstance(){
+    public String getBaseDir() {
+        return baseDir;
+    }
+
+    public void setBaseDir(String baseDir) {
+        this.baseDir = baseDir;
+    }
+
+    public static ApplicationProperties getInstance() {
         return instance;
     }
 
-    public String getInputRootDir() {
-        return inputRootDir;
+    public String getFullCrewMemberDir() {
+        return baseDir + '/' + inputRootDir + '/' + crewFileName;
+    }
+
+    public String getFullSpaceshipDir() {
+        return baseDir + '/' + inputRootDir + '/' + spaceShipFileName;
+    }
+
+    public String getFullMissionDir() {
+        return baseDir + '/' + inputRootDir + '/' + missionFileName;
     }
 
     public void setInputRootDir(String inputRootDir) {
         this.inputRootDir = inputRootDir;
     }
 
-    public String getOutputRootDir() {
-        return outputRootDir;
-    }
-
     public void setOutputRootDir(String outputRootDir) {
         this.outputRootDir = outputRootDir;
-    }
-
-    public String getCrewFileName() {
-        return crewFileName;
     }
 
     public void setCrewFileName(String crewFileName) {
         this.crewFileName = crewFileName;
     }
 
-    public String getMissionFileName() {
-        return missionFileName;
-    }
-
     public void setMissionFileName(String missionFileName) {
         this.missionFileName = missionFileName;
-    }
-
-    public String getSpaceShipFileName() {
-        return spaceShipFileName;
     }
 
     public void setSpaceShipFileName(String spaceShipFileName) {
         this.spaceShipFileName = spaceShipFileName;
     }
 
-    public Integer getFileRefreshRate() {
-        return fileRefreshRate;
-    }
-
     public void setFileRefreshRate(Integer fileRefreshRate) {
         this.fileRefreshRate = fileRefreshRate;
-    }
-
-    public String getDateTimeFormat() {
-        return dateTimeFormat;
     }
 
     public void setDateTimeFormat(String dateTimeFormat) {
