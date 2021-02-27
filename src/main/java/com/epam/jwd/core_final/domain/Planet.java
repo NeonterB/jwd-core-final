@@ -7,4 +7,7 @@ package com.epam.jwd.core_final.domain;
  */
 public class Planet extends AbstractBaseEntity{
 
+    public Planet(String name) {
+        super(name);
+    }
 }
