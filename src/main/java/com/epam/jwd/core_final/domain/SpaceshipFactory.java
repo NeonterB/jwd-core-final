@@ -6,11 +6,7 @@ public class SpaceshipFactory implements EntityFactory<Spaceship>{
     @Override
     public Spaceship create(Object... args) {
         if (args.length != 3) throw new IllegalArgumentException("CrewMember creation requires 3 arguments");
-        try{
-            //noinspection unchecked
-            return new Spaceship((String) args[0], (Long) args[1], (Map<Role, Short>) args[2]);
-        }catch (ClassCastException e){
-            throw e;
-        }
+        //noinspection unchecked
+        return new Spaceship((String) args[0], (Long) args[1], (Map<Role, Short>) args[2]);
     }
 }

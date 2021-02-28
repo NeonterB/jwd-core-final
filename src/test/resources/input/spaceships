@@ -1,7 +1,7 @@
 #name;distance;crew {roleid:count,roleid:count,roleid:count,roleid:count}
 #name;distance;crew {roleid:count,roleid:count,roleid:count,roleid:count}
 #...
-Challenger;201117;{1:5,2:9,3:3,4:3}
+Challenger201117;{1:5,2:9,3:3,4:3}
 Intelligence;758717;{1:7,2:8,3:4,4:1}
 Philadelphia;4870;{1:4,2:8,3:4,4:2}
 Sparta;754471;{1:7,2:7,3:2,4:1}

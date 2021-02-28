@@ -8,8 +8,11 @@ import com.epam.jwd.core_final.util.PropertyReaderUtil;
 import com.epam.jwd.core_final.util.impl.CrewReader;
 import com.epam.jwd.core_final.util.impl.SpaceMapReader;
 import com.epam.jwd.core_final.util.impl.SpaceshipReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -18,6 +21,8 @@ import java.util.Collection;
 
 // todo
 public class NassaContext implements ApplicationContext {
+
+    private static final Logger logger = LoggerFactory.getLogger(NassaContext.class);
 
     // no getters/setters for them
     private Collection<CrewMember> crewMembers;
@@ -57,15 +62,20 @@ public class NassaContext implements ApplicationContext {
     @Override
     public void init() throws InvalidStateException {
         PropertyReaderUtil.loadProperties();
-        crewMembers = new CrewReader().readEntities(
-                getClass().getClassLoader().getResourceAsStream(ApplicationProperties.getInstance().getCrewFileDir())
-        );
-        spaceships = new SpaceshipReader().readEntities(
-                getClass().getClassLoader().getResourceAsStream(ApplicationProperties.getInstance().getSpaceShipFileDir())
-        );
-        planetMap = new SpaceMapReader().readEntities(
-                getClass().getClassLoader().getResourceAsStream(ApplicationProperties.getInstance().getSpaceMapFileDir())
-        );
+        try {
+            crewMembers = new CrewReader().readEntities(
+                    getClass().getClassLoader().getResourceAsStream(ApplicationProperties.getInstance().getCrewFileDir())
+            );
+            spaceships = new SpaceshipReader().readEntities(
+                    getClass().getClassLoader().getResourceAsStream(ApplicationProperties.getInstance().getSpaceShipFileDir())
+            );
+            planetMap = new SpaceMapReader().readEntities(
+                    getClass().getClassLoader().getResourceAsStream(ApplicationProperties.getInstance().getSpaceMapFileDir())
+            );
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            throw new InvalidStateException("Bad input files", e);
+        }
     }
 
     public static void main(String[] args) throws InvalidStateException {

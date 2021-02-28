@@ -14,7 +14,7 @@ public class SpaceMapReader implements ReadStrategy {
     private static final Logger logger = LoggerFactory.getLogger(SpaceMapReader.class);
 
     @Override
-    public Collection<Planet> readEntities(InputStream input) {
+    public Collection<Planet> readEntities(InputStream input) throws IOException {
         Collection<Planet> planets = new HashSet<>();
         PlanetFactory factory = new PlanetFactory();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
@@ -32,7 +32,7 @@ public class SpaceMapReader implements ReadStrategy {
                 }
             }
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+            throw e;
         }
         return planets;
     }

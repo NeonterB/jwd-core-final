@@ -14,7 +14,7 @@ public class SpaceshipReader implements ReadStrategy {
     private static final Logger logger = LoggerFactory.getLogger(SpaceshipReader.class);
 
     @Override
-    public Collection<Spaceship> readEntities(InputStream input) {
+    public Collection<Spaceship> readEntities(InputStream input) throws IOException {
         Collection<Spaceship> spaceships = new HashSet<>();
         SpaceshipFactory factory = new SpaceshipFactory();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
@@ -23,7 +23,7 @@ public class SpaceshipReader implements ReadStrategy {
                     line = reader.readLine();
                 }
                 String[] args = line.split(";");
-
+                if (args.length != 3) throw new IOException("Bad input file - spaceships");
                 //Map parsing
                 args[2] = args[2].substring(1, args[2].length() - 1);
                 String[] pairs = args[2].split(",");
@@ -36,13 +36,8 @@ public class SpaceshipReader implements ReadStrategy {
                 spaceships.add(factory.create(args[0], Long.valueOf(args[1]), crew));
             }
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
+            throw e;
         }
         return spaceships;
-    }
-
-    public static void main(String[] args) {
-        PropertyReaderUtil.loadProperties();
-        //System.out.println(new SpaceshipReader().readEntities(new File(ApplicationProperties.getInstance().getFullSpaceshipDir())));
     }
 }
