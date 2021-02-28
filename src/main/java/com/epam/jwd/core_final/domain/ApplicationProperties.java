@@ -17,7 +17,6 @@ package com.epam.jwd.core_final.domain;
 public class ApplicationProperties {
     private static ApplicationProperties instance = new ApplicationProperties();
 
-    private String baseDir;
     private String inputRootDir;
     private String outputRootDir;
     private String crewFileName;
@@ -37,33 +36,17 @@ public class ApplicationProperties {
         return instance;
     }
 
-
-    public String getBaseDir() {
-        return baseDir;
+    public String getCrewFileDir() {
+        return inputRootDir + '/' + crewFileName;
     }
 
-    public void setBaseDir(String baseDir) {
-        this.baseDir = baseDir;
+    public String getSpaceShipFileDir() {
+        return inputRootDir + '/' + spaceShipFileName;
     }
 
-
-
-    public String getFullCrewMemberDir() {
-        return baseDir + '/' + inputRootDir + '/' + crewFileName;
+    public String getSpaceMapFileDir() {
+        return inputRootDir + '/' + spaceMapFileName;
     }
-
-    public String getFullSpaceshipDir() {
-        return baseDir + '/' + inputRootDir + '/' + spaceShipFileName;
-    }
-
-    public String getFullMissionDir() {
-        return baseDir + '/' + inputRootDir + '/' + missionFileName;
-    }
-
-    public String getFullSpaceMapDir() {
-        return baseDir + '/' + inputRootDir + '/' + spaceMapFileName;
-    }
-
 
     public void setInputRootDir(String inputRootDir) {
         this.inputRootDir = inputRootDir;

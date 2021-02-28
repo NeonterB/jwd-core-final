@@ -57,9 +57,15 @@ public class NassaContext implements ApplicationContext {
     @Override
     public void init() throws InvalidStateException {
         PropertyReaderUtil.loadProperties();
-        crewMembers = new CrewReader().readEntities(new File(ApplicationProperties.getInstance().getFullCrewMemberDir()));
-        spaceships = new SpaceshipReader().readEntities(new File(ApplicationProperties.getInstance().getFullSpaceshipDir()));
-        planetMap = new SpaceMapReader().readEntities(new File(ApplicationProperties.getInstance().getFullSpaceMapDir()));
+        crewMembers = new CrewReader().readEntities(
+                getClass().getClassLoader().getResourceAsStream(ApplicationProperties.getInstance().getCrewFileDir())
+        );
+        spaceships = new SpaceshipReader().readEntities(
+                getClass().getClassLoader().getResourceAsStream(ApplicationProperties.getInstance().getSpaceShipFileDir())
+        );
+        planetMap = new SpaceMapReader().readEntities(
+                getClass().getClassLoader().getResourceAsStream(ApplicationProperties.getInstance().getSpaceMapFileDir())
+        );
     }
 
     public static void main(String[] args) throws InvalidStateException {
