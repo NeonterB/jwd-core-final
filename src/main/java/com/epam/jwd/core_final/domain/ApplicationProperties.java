@@ -23,12 +23,20 @@ public class ApplicationProperties {
     private String crewFileName;
     private String missionFileName;
     private String spaceShipFileName;
+    private String spaceMapFileName;
 
     private Integer fileRefreshRate;
     private String dateTimeFormat;
 
     private ApplicationProperties() {
     }
+
+
+
+    public static ApplicationProperties getInstance() {
+        return instance;
+    }
+
 
     public String getBaseDir() {
         return baseDir;
@@ -38,9 +46,7 @@ public class ApplicationProperties {
         this.baseDir = baseDir;
     }
 
-    public static ApplicationProperties getInstance() {
-        return instance;
-    }
+
 
     public String getFullCrewMemberDir() {
         return baseDir + '/' + inputRootDir + '/' + crewFileName;
@@ -53,6 +59,11 @@ public class ApplicationProperties {
     public String getFullMissionDir() {
         return baseDir + '/' + inputRootDir + '/' + missionFileName;
     }
+
+    public String getFullSpaceMapDir() {
+        return baseDir + '/' + inputRootDir + '/' + spaceMapFileName;
+    }
+
 
     public void setInputRootDir(String inputRootDir) {
         this.inputRootDir = inputRootDir;
@@ -72,6 +83,10 @@ public class ApplicationProperties {
 
     public void setSpaceShipFileName(String spaceShipFileName) {
         this.spaceShipFileName = spaceShipFileName;
+    }
+
+    public void setSpaceMapFileName(String spaceMapFileName) {
+        this.spaceMapFileName = spaceMapFileName;
     }
 
     public void setFileRefreshRate(Integer fileRefreshRate) {

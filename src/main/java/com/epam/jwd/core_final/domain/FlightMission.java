@@ -23,12 +23,16 @@ public class FlightMission extends AbstractBaseEntity {
     private Spaceship assignedSpaceship;
     private List<CrewMember> assignedCrew;
     private MissionResult missionResult;
+    private Planet from;
+    private Planet to;
 
-    FlightMission(String name, LocalDate startDate, Long distance, Spaceship assignedSpaceship) {
+    FlightMission(String name, LocalDate startDate, Long distance, Spaceship assignedSpaceship, Planet from, Planet to) {
         super(name);
         this.startDate = startDate;
         this.distance = distance;
         this.assignedSpaceship = assignedSpaceship;
+        this.from = from;
+        this.to = to;
     }
     //todo
 }

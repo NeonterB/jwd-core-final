@@ -6,6 +6,7 @@ import com.epam.jwd.core_final.exception.InvalidStateException;
 import com.epam.jwd.core_final.exception.UnknownEntityException;
 import com.epam.jwd.core_final.util.PropertyReaderUtil;
 import com.epam.jwd.core_final.util.impl.CrewReader;
+import com.epam.jwd.core_final.util.impl.SpaceMapReader;
 import com.epam.jwd.core_final.util.impl.SpaceshipReader;
 
 import java.io.File;
@@ -58,7 +59,7 @@ public class NassaContext implements ApplicationContext {
         PropertyReaderUtil.loadProperties();
         crewMembers = new CrewReader().readEntities(new File(ApplicationProperties.getInstance().getFullCrewMemberDir()));
         spaceships = new SpaceshipReader().readEntities(new File(ApplicationProperties.getInstance().getFullSpaceshipDir()));
-        System.out.println(this.retrieveBaseEntityList(CrewMember.class));
+        planetMap = new SpaceMapReader().readEntities(new File(ApplicationProperties.getInstance().getFullSpaceMapDir()));
     }
 
     public static void main(String[] args) throws InvalidStateException {

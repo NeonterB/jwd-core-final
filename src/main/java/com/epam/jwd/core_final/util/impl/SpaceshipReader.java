@@ -16,8 +16,7 @@ public class SpaceshipReader implements ReadStrategy {
         Collection<Spaceship> spaceships = new HashSet<>();
         SpaceshipFactory factory = new SpaceshipFactory();
         try (BufferedReader reader = new BufferedReader(new FileReader(input))) {
-            String line = reader.readLine();
-            while (line != null) {
+            for (String line = reader.readLine(); line != null; line = reader.readLine()) {
                 while (line.charAt(0) == '#') {
                     line = reader.readLine();
                 }
@@ -33,7 +32,6 @@ public class SpaceshipReader implements ReadStrategy {
                 }
 
                 spaceships.add(factory.create(args[0], Long.valueOf(args[1]), crew));
-                line = reader.readLine();
             }
         } catch (IOException e) {
             //todo

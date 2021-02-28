@@ -34,6 +34,7 @@ public final class PropertyReaderUtil {
             appProperties.setCrewFileName(properties.getProperty("crewFileName"));
             appProperties.setMissionFileName(properties.getProperty("missionsFileName"));
             appProperties.setSpaceShipFileName(properties.getProperty("spaceshipsFileName"));
+            appProperties.setSpaceMapFileName(properties.getProperty("spaceMapFileName"));
             appProperties.setFileRefreshRate(Integer.parseInt(properties.getProperty("fileRefreshRate")));
             appProperties.setDateTimeFormat(properties.getProperty("dateTimeFormat"));
         }catch(IOException e){
