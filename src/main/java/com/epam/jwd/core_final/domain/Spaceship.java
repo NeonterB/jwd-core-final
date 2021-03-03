@@ -1,6 +1,9 @@
 package com.epam.jwd.core_final.domain;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * crew {@link java.util.Map<Role, Short>}
@@ -12,22 +15,55 @@ public class Spaceship extends AbstractBaseEntity {
     private Long flightDistance;
     private Boolean isReadyForNextMission = true;
 
-    Spaceship(String name, Long flightDistance, Map<Role, Short> crew) {
+    Spaceship(@NotNull String name, Long flightDistance, Map<Role, Short> crew) {
         super(name);
         this.crew = crew;
         this.flightDistance = flightDistance;
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Spaceship spaceship = (Spaceship) o;
+        return crew.equals(spaceship.crew) && flightDistance.equals(spaceship.flightDistance);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), crew, flightDistance);
+    }
+
+    public Map<Role, Short> getCrew() {
+        return crew;
+    }
+
+    public Long getFlightDistance() {
+        return flightDistance;
+    }
+
+    public Boolean isReadyForNextMission() {
+        return isReadyForNextMission;
+    }
+
+    public String convertMapToString(Map<Role, Short> map) {
+        StringBuilder mapAsString = new StringBuilder("{");
+        for (Role key : map.keySet()) {
+            mapAsString.append(key.getId() + ":" + map.get(key) + ",");
+        }
+        mapAsString.delete(mapAsString.length() - 1, mapAsString.length()).append("}");
+        return mapAsString.toString();
+    }
+
+    @Override
     public String toString() {
         return "Spaceship{" +
-                "name=" + getName() +
-                ", id=" + getId() +
+                "id=" + getId() +
+                ", name=" + getName() +
                 ", flightDistance=" + flightDistance +
                 ", isReadyForNextMission=" + isReadyForNextMission +
                 ", crew=" + crew +
                 "}\n";
     }
-
-    //todo
 }

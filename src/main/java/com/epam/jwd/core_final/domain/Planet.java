@@ -6,11 +6,11 @@ package com.epam.jwd.core_final.domain;
  * location {@link java.util.Map} - planet coordinate in the universe
  */
 public class Planet extends AbstractBaseEntity{
-    private static class Point{
+    public class Point{
         private Integer x;
         private Integer y;
 
-        public Point(Integer x, Integer y) {
+        private Point(Integer x, Integer y) {
             this.x = x;
             this.y = y;
         }

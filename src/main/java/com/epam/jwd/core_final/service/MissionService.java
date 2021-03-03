@@ -1,6 +1,7 @@
 package com.epam.jwd.core_final.service;
 
 import com.epam.jwd.core_final.criteria.Criteria;
+import com.epam.jwd.core_final.domain.CrewMember;
 import com.epam.jwd.core_final.domain.FlightMission;
 
 import java.util.List;
@@ -14,7 +15,8 @@ public interface MissionService {
 
     Optional<FlightMission> findMissionByCriteria(Criteria<? extends FlightMission> criteria);
 
-    FlightMission updateSpaceshipDetails(FlightMission flightMission);
+    // todo create custom exception for case, when crewMember is not able to be assigned
+    void assignCrewMemberOnMission(CrewMember crewMember) throws RuntimeException;
 
     FlightMission createMission(FlightMission flightMission);
 }

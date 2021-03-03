@@ -29,7 +29,7 @@ public final class PropertyReaderUtil {
     public static void loadProperties() {
         ApplicationProperties appProperties = ApplicationProperties.getInstance();
 
-        try(InputStream input = PropertyReaderUtil.class.getClassLoader().getResourceAsStream("application.properties")){
+        try (InputStream input = PropertyReaderUtil.class.getClassLoader().getResourceAsStream("application.properties")) {
             properties.load(input);
             appProperties.setInputRootDir(properties.getProperty("inputRootDir"));
             appProperties.setOutputRootDir(properties.getProperty("outputRootDir"));
@@ -39,8 +39,9 @@ public final class PropertyReaderUtil {
             appProperties.setSpaceMapFileName(properties.getProperty("spaceMapFileName"));
             appProperties.setFileRefreshRate(Integer.parseInt(properties.getProperty("fileRefreshRate")));
             appProperties.setDateTimeFormat(properties.getProperty("dateTimeFormat"));
-        }catch(IOException e){
+        } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
+        logger.debug("Application properties loaded");
     }
 }

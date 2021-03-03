@@ -1,10 +1,7 @@
-package com.epam.jwd.core_final.util.impl;
+package com.epam.jwd.core_final.io.impl;
 
-import com.epam.jwd.core_final.domain.CrewMember;
-import com.epam.jwd.core_final.domain.CrewMemberFactory;
-import com.epam.jwd.core_final.domain.Rank;
-import com.epam.jwd.core_final.domain.Role;
-import com.epam.jwd.core_final.util.ReadStrategy;
+import com.epam.jwd.core_final.domain.*;
+import com.epam.jwd.core_final.io.ReadStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,15 +11,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 
-public class CrewReader implements ReadStrategy {
-    private static final Logger logger = LoggerFactory.getLogger(CrewReader.class);
-
+public class CrewReader implements ReadStrategy<CrewMember> {
     @Override
-    public Collection<CrewMember> readEntities(InputStream input) throws IOException {
+    public Collection<CrewMember> readEntities() throws IOException {
         Collection<CrewMember> crewMembers = new HashSet<>();
         CrewMemberFactory factory = new CrewMemberFactory();
-        try(BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(
+                Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(
+                        ApplicationProperties.getInstance().getCrewFileDir()
+                ))
+        ))) {
             String line = reader.readLine();
             while (line.charAt(0) == '#') {
                 line = reader.readLine();
@@ -36,8 +36,6 @@ public class CrewReader implements ReadStrategy {
                         Rank.resolveRankById(Integer.parseInt(args[2]))
                 ));
             }
-        } catch (IOException e) {
-            throw e;
         }
         return crewMembers;
     }

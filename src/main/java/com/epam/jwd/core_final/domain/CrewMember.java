@@ -1,5 +1,9 @@
 package com.epam.jwd.core_final.domain;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+
 /**
  * Expected fields:
  * <p>
@@ -12,21 +16,46 @@ public class CrewMember extends AbstractBaseEntity {
     private final Rank rank;
     private Boolean isReadyForNextMission = true;
 
-    CrewMember(Role role, String name, Rank rank) {
+    CrewMember(@NotNull Role role, String name, Rank rank) {
         super(name);
         this.role = role;
         this.rank = rank;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public Rank getRank() {
+        return rank;
+    }
+
+    public Boolean isReadyForNextMission() {
+        return isReadyForNextMission;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        CrewMember that = (CrewMember) o;
+        return role == that.role && rank == that.rank;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), role, rank);
+    }
+
     @Override
     public String toString() {
         return "CrewMember{" +
-                "name=" + getName() +
-                ", id=" + getId() +
+                "id=" + getId() +
+                ", name=" + getName() +
                 ", role=" + role +
                 ", rank=" + rank +
                 ", isReadyForNextMission=" + isReadyForNextMission +
                 "}\n";
     }
-    //todo
 }

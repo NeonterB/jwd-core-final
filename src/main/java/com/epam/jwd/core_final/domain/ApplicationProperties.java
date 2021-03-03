@@ -31,7 +31,6 @@ public class ApplicationProperties {
     }
 
 
-
     public static ApplicationProperties getInstance() {
         return instance;
     }
@@ -40,7 +39,7 @@ public class ApplicationProperties {
         return inputRootDir + '/' + crewFileName;
     }
 
-    public String getSpaceShipFileDir() {
+    public String getSpaceshipFileDir() {
         return inputRootDir + '/' + spaceShipFileName;
     }
 

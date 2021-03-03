@@ -15,6 +15,14 @@ public class SpaceshipCriteria extends Criteria<Spaceship> {
     private SpaceshipCriteria() {
     }
 
+    @Override
+    public boolean meetsCriteria(Spaceship spaceship) {
+        return super.meetsCriteria(spaceship) &&
+                (crew == null || spaceship.getCrew().equals(crew)) &&
+                (flightDistance == null || spaceship.getFlightDistance().equals(flightDistance)) &&
+                (isReadyForNextMission == null || spaceship.isReadyForNextMission().equals(isReadyForNextMission));
+    }
+
     public SpaceshipCriteriaBuilder newBuilder() {
         return new SpaceshipCriteria().new SpaceshipCriteriaBuilder();
     }

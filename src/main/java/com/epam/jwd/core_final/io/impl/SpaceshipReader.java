@@ -1,23 +1,22 @@
-package com.epam.jwd.core_final.util.impl;
+package com.epam.jwd.core_final.io.impl;
 
 import com.epam.jwd.core_final.domain.*;
-import com.epam.jwd.core_final.util.PropertyReaderUtil;
-import com.epam.jwd.core_final.util.ReadStrategy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.epam.jwd.core_final.io.ReadStrategy;
 
 import java.io.*;
 import java.util.*;
 
-public class SpaceshipReader implements ReadStrategy {
-
-    private static final Logger logger = LoggerFactory.getLogger(SpaceshipReader.class);
+public class SpaceshipReader implements ReadStrategy<Spaceship> {
 
     @Override
-    public Collection<Spaceship> readEntities(InputStream input) throws IOException {
+    public Collection<Spaceship> readEntities() throws IOException {
         Collection<Spaceship> spaceships = new HashSet<>();
         SpaceshipFactory factory = new SpaceshipFactory();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(
+                        ApplicationProperties.getInstance().getSpaceshipFileDir()
+                ))
+        ))) {
             for (String line = reader.readLine(); line != null; line = reader.readLine()) {
                 while (line.charAt(0) == '#') {
                     line = reader.readLine();
@@ -35,8 +34,6 @@ public class SpaceshipReader implements ReadStrategy {
 
                 spaceships.add(factory.create(args[0], Long.valueOf(args[1]), crew));
             }
-        } catch (IOException e) {
-            throw e;
         }
         return spaceships;
     }

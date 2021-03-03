@@ -15,6 +15,14 @@ public class CrewMemberCriteria extends Criteria<CrewMember> {
     private CrewMemberCriteria() {
     }
 
+    @Override
+    public boolean meetsCriteria(CrewMember member) {
+        return super.meetsCriteria(member) &&
+                (role == null || member.getRole().equals(role)) &&
+                (rank == null || member.getRank().equals(rank)) &&
+                (isReadyForNextMission == null || member.isReadyForNextMission().equals(isReadyForNextMission));
+    }
+
     public CrewMemberCriteriaBuilder newBuilder() {
         return new CrewMemberCriteria().new CrewMemberCriteriaBuilder();
     }
@@ -34,7 +42,7 @@ public class CrewMemberCriteria extends Criteria<CrewMember> {
             return this;
         }
 
-        public CrewMemberCriteriaBuilder setReadiness(Boolean readiness){
+        public CrewMemberCriteriaBuilder setReadiness(Boolean readiness) {
             CrewMemberCriteria.this.isReadyForNextMission = readiness;
             return this;
         }

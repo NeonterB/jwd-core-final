@@ -1,4 +1,4 @@
-package com.epam.jwd.core_final.util;
+package com.epam.jwd.core_final.io;
 
 import com.epam.jwd.core_final.domain.AbstractBaseEntity;
 
@@ -7,6 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 
-public interface ReadStrategy {
-    Collection<? extends AbstractBaseEntity> readEntities(InputStream input) throws IOException;
+public interface ReadStrategy<T extends AbstractBaseEntity>{
+    Collection<T> readEntities() throws IOException;
 }

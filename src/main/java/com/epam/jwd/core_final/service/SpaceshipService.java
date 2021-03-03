@@ -2,7 +2,9 @@ package com.epam.jwd.core_final.service;
 
 import com.epam.jwd.core_final.criteria.Criteria;
 import com.epam.jwd.core_final.domain.Spaceship;
+import com.epam.jwd.core_final.exception.EntityCollisionException;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,18 +14,13 @@ import java.util.Optional;
  */
 public interface SpaceshipService {
 
-    List<Spaceship> findAllSpaceships();
+    Collection<Spaceship> findAllSpaceships();
 
-    List<Spaceship> findAllSpaceshipsByCriteria(Criteria<? extends Spaceship> criteria);
+    Collection<Spaceship> findAllSpaceshipsByCriteria(Criteria<Spaceship> criteria);
 
-    Optional<Spaceship> findSpaceshipByCriteria(Criteria<? extends Spaceship> criteria);
-
-    Spaceship updateSpaceshipDetails(Spaceship spaceship);
-
-    // todo create custom exception for case, when spaceship is not able to be assigned
-    void assignSpaceshipOnMission(Spaceship crewMember) throws RuntimeException;
+    Optional<Spaceship> findSpaceshipByCriteria(Criteria<Spaceship> criteria);
 
     // todo create custom exception for case, when crewMember is not able to be created (for example - duplicate.
     // spaceship unique criteria - only name!
-    Spaceship createSpaceship(Spaceship spaceship) throws RuntimeException;
+    Spaceship createSpaceship(Spaceship spaceship) throws RuntimeException, EntityCollisionException;
 }

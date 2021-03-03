@@ -15,8 +15,21 @@ public class FlightMissionCriteria extends Criteria<FlightMission> {
     private Spaceship assignedSpaceship;
     private List<CrewMember> assignedCrew;
     private MissionResult missionResult;
+    private Planet from;
+    private Planet to;
 
     private FlightMissionCriteria() {
+    }
+
+    @Override
+    public boolean meetsCriteria(FlightMission mission) {
+        return super.meetsCriteria(mission) &&
+                (startDate == null || mission.getStartDate().equals(startDate)) &&
+                (endDate == null || mission.getEndDate().equals(endDate)) &&
+                (distance == null || mission.getDistance().equals(distance)) &&
+                (assignedCrew == null || mission.getAssignedCrew().equals(assignedCrew)) &&
+                (assignedSpaceship == null || mission.getAssignedSpaceship().equals(assignedSpaceship)) &&
+                (missionResult == null || mission.getMissionResult().equals(missionResult));
     }
 
     public FlightMissionCriteriaBuilder newBuilder() {
@@ -53,6 +66,16 @@ public class FlightMissionCriteria extends Criteria<FlightMission> {
             return this;
         }
 
+        public FlightMissionCriteriaBuilder setFrom(Planet from){
+            FlightMissionCriteria.this.from = from;
+            return this;
+        }
+
+        public FlightMissionCriteriaBuilder setTo(Planet to){
+            FlightMissionCriteria.this.to = to;
+            return this;
+        }
+
         @Override
         public Criteria<FlightMission> build() {
             FlightMissionCriteria criteria = new FlightMissionCriteria();
@@ -64,6 +87,8 @@ public class FlightMissionCriteria extends Criteria<FlightMission> {
             criteria.assignedSpaceship = FlightMissionCriteria.this.assignedSpaceship;
             criteria.assignedCrew = FlightMissionCriteria.this.assignedCrew;
             criteria.missionResult = FlightMissionCriteria.this.missionResult;
+            criteria.from = FlightMissionCriteria.this.from;
+            criteria.to = FlightMissionCriteria.this.to;
             return criteria;
         }
     }

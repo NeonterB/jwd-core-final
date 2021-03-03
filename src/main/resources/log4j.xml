@@ -15,13 +15,7 @@
 
     <category name="com.epam.jwd.core_final">
         <!--all, trace, debug, info, warn, error, fatal-->
-        <priority value="fatal"/>
-        <appender-ref ref="fileAppender"/>
-    </category>
-
-    <category name="com.epam.jwd.core_final.util">
-        <!--all, trace, debug, info, warn, error, fatal-->
-        <priority value="error"/>
+        <priority value="all"/>
         <appender-ref ref="fileAppender"/>
     </category>
 </log4j:configuration>

@@ -1,6 +1,7 @@
 package com.epam.jwd.core_final.criteria;
 
 import com.epam.jwd.core_final.domain.BaseEntity;
+import com.epam.jwd.core_final.domain.CrewMember;
 
 /**
  * Should be a builder for {@link BaseEntity} fields
@@ -10,6 +11,10 @@ public abstract class Criteria<T extends BaseEntity> {
     protected String name;
 
     protected Criteria() {
+    }
+
+    public boolean meetsCriteria(T entity){
+        return (id == null || (entity.getId().equals(id))) && (name == null || entity.getName().equalsIgnoreCase(name));
     }
 
     public abstract class Builder {
