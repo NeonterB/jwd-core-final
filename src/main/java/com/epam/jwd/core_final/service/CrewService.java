@@ -2,10 +2,11 @@ package com.epam.jwd.core_final.service;
 
 import com.epam.jwd.core_final.criteria.Criteria;
 import com.epam.jwd.core_final.domain.CrewMember;
-import com.epam.jwd.core_final.exception.EntityCollisionException;
+import com.epam.jwd.core_final.exception.EntityExistsException;
+import com.epam.jwd.core_final.exception.EntityNotFoundException;
 
+import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -16,9 +17,11 @@ public interface CrewService {
 
     Collection<CrewMember> findAllCrewMembers();
 
-    Collection<CrewMember> findAllCrewMembersByCriteria(Criteria<CrewMember> criteria);
+    Collection<CrewMember> findAllCrewMembersByCriteria(Criteria<CrewMember> criteria) throws EntityNotFoundException;
 
-    Optional<CrewMember> findCrewMemberByCriteria(Criteria<CrewMember> criteria);
+    Optional<CrewMember> findCrewMemberByCriteria(Criteria<CrewMember> criteria) throws EntityNotFoundException;
 
-    CrewMember createCrewMember(CrewMember crewMember) throws EntityCollisionException;
+    CrewMember createCrewMember(CrewMember crewMember) throws EntityExistsException, IOException;
+
+    void deleteCrewMember(CrewMember crewMember) throws EntityNotFoundException, IOException;
 }

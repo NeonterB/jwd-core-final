@@ -38,14 +38,7 @@ public class CrewMember extends AbstractBaseEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        CrewMember that = (CrewMember) o;
-        return role == that.role && rank == that.rank;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), role, rank);
+        return super.equals(o);
     }
 
     @Override
@@ -56,6 +49,6 @@ public class CrewMember extends AbstractBaseEntity {
                 ", role=" + role +
                 ", rank=" + rank +
                 ", isReadyForNextMission=" + isReadyForNextMission +
-                "}\n";
+                "}";
     }
 }

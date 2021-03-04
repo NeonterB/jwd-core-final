@@ -25,14 +25,7 @@ public class Spaceship extends AbstractBaseEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        Spaceship spaceship = (Spaceship) o;
-        return crew.equals(spaceship.crew) && flightDistance.equals(spaceship.flightDistance);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), crew, flightDistance);
+        return super.equals(o);
     }
 
     public Map<Role, Short> getCrew() {
@@ -64,6 +57,6 @@ public class Spaceship extends AbstractBaseEntity {
                 ", flightDistance=" + flightDistance +
                 ", isReadyForNextMission=" + isReadyForNextMission +
                 ", crew=" + crew +
-                "}\n";
+                "}";
     }
 }

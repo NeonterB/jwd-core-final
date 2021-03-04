@@ -1,10 +1,10 @@
 package com.epam.jwd.core_final.exception;
 
-public class EntityCollisionException extends Exception {
+public class EntityExistsException extends Exception {
     private final String entityName;
     private final String message;
 
-    public EntityCollisionException(String entityName, String msg) {
+    public EntityExistsException(String entityName, String msg) {
         super();
         this.entityName = entityName;
         this.message = msg;

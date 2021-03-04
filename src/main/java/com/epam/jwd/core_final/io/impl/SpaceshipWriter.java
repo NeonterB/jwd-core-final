@@ -27,10 +27,10 @@ public class SpaceshipWriter implements WriteStrategy<Spaceship> {
         }
     }
 
-    private String mapToString(Map<Role, ?> map) {
+    public static String mapToString(Map<Role, ?> map) {
         StringBuilder mapAsString = new StringBuilder("{");
         for (Role key : map.keySet()) {
-            mapAsString.append(key.getId()).append("=").append(map.get(key)).append(",");
+            mapAsString.append(key.getId()).append(":").append(map.get(key)).append(",");
         }
         mapAsString.delete(mapAsString.length() - 1, mapAsString.length()).append("}");
         return mapAsString.toString();

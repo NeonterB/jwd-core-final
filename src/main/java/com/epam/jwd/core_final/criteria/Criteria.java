@@ -33,4 +33,12 @@ public abstract class Criteria<T extends BaseEntity> {
 
         public abstract Criteria<T> build();
     }
+
+    @Override
+    public String toString() {
+        return "Criteria{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

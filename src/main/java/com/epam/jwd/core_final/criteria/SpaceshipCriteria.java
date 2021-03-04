@@ -23,8 +23,19 @@ public class SpaceshipCriteria extends Criteria<Spaceship> {
                 (isReadyForNextMission == null || spaceship.isReadyForNextMission().equals(isReadyForNextMission));
     }
 
-    public SpaceshipCriteriaBuilder newBuilder() {
+    public static SpaceshipCriteriaBuilder newBuilder() {
         return new SpaceshipCriteria().new SpaceshipCriteriaBuilder();
+    }
+
+    @Override
+    public String toString() {
+        return "SpaceshipCriteria{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", crew=" + crew +
+                ", flightDistance=" + flightDistance +
+                ", isReadyForNextMission=" + isReadyForNextMission +
+                '}';
     }
 
     public class SpaceshipCriteriaBuilder extends Criteria<Spaceship>.Builder {

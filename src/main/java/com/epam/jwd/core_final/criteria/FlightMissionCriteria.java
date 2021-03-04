@@ -32,8 +32,24 @@ public class FlightMissionCriteria extends Criteria<FlightMission> {
                 (missionResult == null || mission.getMissionResult().equals(missionResult));
     }
 
-    public FlightMissionCriteriaBuilder newBuilder() {
+    public static FlightMissionCriteriaBuilder newBuilder() {
         return new FlightMissionCriteria().new FlightMissionCriteriaBuilder();
+    }
+
+    @Override
+    public String toString() {
+        return "FlightMissionCriteria{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", distance=" + distance +
+                ", assignedSpaceship=" + assignedSpaceship +
+                ", assignedCrew=" + assignedCrew +
+                ", missionResult=" + missionResult +
+                ", from=" + from +
+                ", to=" + to +
+                '}';
     }
 
     public class FlightMissionCriteriaBuilder extends Criteria<FlightMission>.Builder {

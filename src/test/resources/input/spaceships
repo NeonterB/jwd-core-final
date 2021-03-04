@@ -1,7 +1,7 @@
 #name;distance;crew {roleid:count,roleid:count,roleid:count,roleid:count}
 #name;distance;crew {roleid:count,roleid:count,roleid:count,roleid:count}
 #...
-Challenger201117;{1:5,2:9,3:3,4:3}
+Challenger;201117;{1:5,2:9,3:3,4:3}
 Intelligence;758717;{1:7,2:8,3:4,4:1}
 Philadelphia;4870;{1:4,2:8,3:4,4:2}
 Sparta;754471;{1:7,2:7,3:2,4:1}
@@ -11,7 +11,7 @@ LWSS Ural;107011;{1:5,2:7,3:4,4:1}
 SS Escorial;287032;{1:4,2:8,3:3,4:2}
 HMS Royal;449967;{1:6,2:9,3:2,4:2}
 HMS Nightfal;826146;{1:4,2:6,3:3,4:2}
-Wolf;739151;{1:9,2:9,3:4,4:2}
+Dog;739151;{1:9,2:9,3:4,4:2}
 Providence;160265;{1:5,2:5,3:4,4:3}
 Spider;568205;{1:8,2:5,3:2,4:2}
 Invincible;375415;{1:7,2:5,3:4,4:1}

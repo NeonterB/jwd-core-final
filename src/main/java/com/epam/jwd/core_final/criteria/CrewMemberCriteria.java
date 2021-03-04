@@ -23,8 +23,19 @@ public class CrewMemberCriteria extends Criteria<CrewMember> {
                 (isReadyForNextMission == null || member.isReadyForNextMission().equals(isReadyForNextMission));
     }
 
-    public CrewMemberCriteriaBuilder newBuilder() {
+    public static CrewMemberCriteriaBuilder newBuilder() {
         return new CrewMemberCriteria().new CrewMemberCriteriaBuilder();
+    }
+
+    @Override
+    public String toString() {
+        return "CrewMemberCriteria{" +
+                "role=" + role +
+                ", rank=" + rank +
+                ", isReadyForNextMission=" + isReadyForNextMission +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 
     public class CrewMemberCriteriaBuilder extends Criteria<CrewMember>.Builder {

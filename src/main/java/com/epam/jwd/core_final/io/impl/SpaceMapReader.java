@@ -10,12 +10,13 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Objects;
 
 public class SpaceMapReader implements ReadStrategy<Planet> {
     @Override
     public Collection<Planet> readEntities() throws IOException {
-        Collection<Planet> planets = new HashSet<>();
+        Collection<Planet> planets = new LinkedHashSet<>();
         PlanetFactory factory = new PlanetFactory();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
                 Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(

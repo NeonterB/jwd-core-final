@@ -9,14 +9,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 
 public class CrewReader implements ReadStrategy<CrewMember> {
     @Override
     public Collection<CrewMember> readEntities() throws IOException {
-        Collection<CrewMember> crewMembers = new HashSet<>();
+        Collection<CrewMember> crewMembers = new LinkedHashSet<>();
         CrewMemberFactory factory = new CrewMemberFactory();
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(
                 Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(

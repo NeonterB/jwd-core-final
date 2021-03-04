@@ -2,10 +2,14 @@ package com.epam.jwd.core_final.repository.impl;
 
 import com.epam.jwd.core_final.Main;
 import com.epam.jwd.core_final.context.ApplicationContext;
-import com.epam.jwd.core_final.domain.AbstractBaseEntity;
-import com.epam.jwd.core_final.exception.EntityCollisionException;
-import com.epam.jwd.core_final.exception.InvalidStateException;
+import com.epam.jwd.core_final.domain.BaseEntity;
+import com.epam.jwd.core_final.domain.CrewMember;
+import com.epam.jwd.core_final.domain.EntityWrap;
+import com.epam.jwd.core_final.domain.Spaceship;
+import com.epam.jwd.core_final.exception.EntityExistsException;
+import com.epam.jwd.core_final.exception.EntityNotFoundException;
 import com.epam.jwd.core_final.exception.UnknownEntityException;
+import com.epam.jwd.core_final.io.EraseStrategy;
 import com.epam.jwd.core_final.io.ReadStrategy;
 import com.epam.jwd.core_final.io.WriteStrategy;
 import com.epam.jwd.core_final.repository.EntityRepository;
@@ -19,6 +23,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 
+@SuppressWarnings("unchecked")
 public class EntityRepositoryImpl implements EntityRepository {
     private static final EntityRepositoryImpl instance = new EntityRepositoryImpl();
 
@@ -31,10 +36,11 @@ public class EntityRepositoryImpl implements EntityRepository {
         return instance;
     }
 
-    private <T extends AbstractBaseEntity> Class<?> getStrategyImplementation(Class<?> strategyInterface, Class<T> entityClass) throws UnknownEntityException {
-        if (!(strategyInterface.equals(WriteStrategy.class) || strategyInterface.equals(ReadStrategy.class))) {
-            throw new IllegalArgumentException("Unknown strategy class");
-        }
+    private <T extends BaseEntity> Class<?> getStrategyImplementation(Class<?> strategyInterface, Class<T> entityClass) throws UnknownEntityException {
+        assert (strategyInterface.equals(WriteStrategy.class) ||
+                strategyInterface.equals(ReadStrategy.class) ||
+                strategyInterface.equals(EraseStrategy.class));
+
         Reflections reflections = new Reflections("com.epam.jwd.core_final.io.impl");
         return reflections.getSubTypesOf(strategyInterface).stream()
                 .filter(aClass -> {
@@ -56,9 +62,8 @@ public class EntityRepositoryImpl implements EntityRepository {
                 .orElseThrow(() -> new UnknownEntityException(entityClass.getSimpleName()));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T extends AbstractBaseEntity> Collection<T> getAll(Class<T> tClass) throws IOException {
+    public <T extends BaseEntity> Collection<T> getAll(Class<T> tClass) throws IOException {
         Collection<T> collection = null;
         try {
             ReadStrategy<T> strategy = (ReadStrategy<T>) getStrategyImplementation(ReadStrategy.class, tClass).newInstance();
@@ -70,19 +75,9 @@ public class EntityRepositoryImpl implements EntityRepository {
         return collection;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T extends AbstractBaseEntity> void create(T entity) throws EntityCollisionException, IOException {
-        ApplicationContext context = Main.getApplicationMenu().getApplicationContext();
-
-        Collection<T> cache = (Collection<T>) context.retrieveBaseEntityList(entity.getClass());
-        if (cache.contains(entity))
-            throw new EntityCollisionException(entity.getClass().getSimpleName(), entity.toString() + " already exists");
-
-        cache = (Collection<T>) context.updateCache(entity.getClass());
-        if (cache.contains(entity))
-            throw new EntityCollisionException(entity.getClass().getSimpleName(), entity.toString() + " already exists");
-
+    public <T extends BaseEntity> void create(T entity) throws EntityExistsException, IOException {
+        assert entity.getClass().equals(CrewMember.class) || entity.getClass().equals(Spaceship.class);
         try {
             WriteStrategy<T> strategy = (WriteStrategy<T>) getStrategyImplementation(WriteStrategy.class, entity.getClass()).newInstance();
             strategy.writeEntity(entity);
@@ -93,7 +88,14 @@ public class EntityRepositoryImpl implements EntityRepository {
     }
 
     @Override
-    public <T extends AbstractBaseEntity> void delete(T entity) {
-
+    public <T extends BaseEntity> void delete(T entity) throws IOException, EntityNotFoundException {
+        try {
+            EraseStrategy<T> strategy = (EraseStrategy<T>) getStrategyImplementation(EraseStrategy.class, entity.getClass()).newInstance();
+            strategy.erase(entity);
+        } catch (InstantiationException | IllegalAccessException e) {
+            logger.error(e.getMessage());
+        }
+        logger.debug("{} was deleted from file", entity);
     }
+
 }

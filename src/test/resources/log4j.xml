@@ -18,4 +18,10 @@
         <priority value="all"/>
         <appender-ref ref="fileAppender"/>
     </category>
+
+    <category name="org.reflections">
+        <!--all, trace, debug, info, warn, error, fatal-->
+        <priority value="error"/>
+        <appender-ref ref="fileAppender"/>
+    </category>
 </log4j:configuration>

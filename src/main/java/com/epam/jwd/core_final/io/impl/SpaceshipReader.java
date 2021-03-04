@@ -10,7 +10,7 @@ public class SpaceshipReader implements ReadStrategy<Spaceship> {
 
     @Override
     public Collection<Spaceship> readEntities() throws IOException {
-        Collection<Spaceship> spaceships = new HashSet<>();
+        Collection<Spaceship> spaceships = new LinkedHashSet<>();
         SpaceshipFactory factory = new SpaceshipFactory();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
                 Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(
