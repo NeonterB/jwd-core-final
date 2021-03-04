@@ -26,6 +26,7 @@ public class NassaContext implements ApplicationContext {
     private Collection<EntityWrap<CrewMember>> crewMembers;
     private Collection<EntityWrap<Spaceship>> spaceships;
     private Collection<Planet> planetMap;
+    private Collection<FlightMission> missions;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -77,6 +78,7 @@ public class NassaContext implements ApplicationContext {
                     .map(EntityWrap::new)
                     .collect(Collectors.toCollection(LinkedHashSet::new));
             planetMap = EntityRepositoryImpl.getInstance().getAll(Planet.class);
+            missions = new LinkedHashSet<>();
         } catch (IOException e) {
             logger.error(e.getMessage());
             throw new InvalidStateException("Bad input files", e);
@@ -112,6 +114,6 @@ public class NassaContext implements ApplicationContext {
     public static void main(String[] args) throws InvalidStateException {
         NassaContext context = new NassaContext();
         context.init();
-        context.retrieveBaseEntityList(Planet.class);
+        context.retrieveBaseEntityList(FlightMission.class);
     }
 }

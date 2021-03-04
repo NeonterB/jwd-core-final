@@ -3,6 +3,7 @@ package com.epam.jwd.core_final.domain;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,8 +21,8 @@ import java.util.Objects;
  * to {@link Planet}
  */
 public class FlightMission extends AbstractBaseEntity {
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private Long distance;
     private Spaceship assignedSpaceship;
     private List<CrewMember> assignedCrew;
@@ -29,20 +30,18 @@ public class FlightMission extends AbstractBaseEntity {
     private Planet from;
     private Planet to;
 
-    FlightMission(@NotNull String name, LocalDate startDate, Long distance, Spaceship assignedSpaceship, Planet from, Planet to) {
+    FlightMission(@NotNull String name, LocalDateTime startDate, Planet from, Planet to) {
         super(name);
         this.startDate = startDate;
-        this.distance = distance;
-        this.assignedSpaceship = assignedSpaceship;
         this.from = from;
         this.to = to;
     }
 
-    public LocalDate getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public LocalDate getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 

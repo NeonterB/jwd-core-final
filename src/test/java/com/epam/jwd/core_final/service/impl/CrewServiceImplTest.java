@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CrewServiceImplTest {
-    private static final EntityFactory<CrewMember> factory = new CrewMemberFactory();
     private static ApplicationContext context;
 
     @BeforeAll
@@ -47,16 +46,14 @@ class CrewServiceImplTest {
                     .setName("test")
                     .build();
             CrewMemberCriteria finalCriteria = criteria;
-            assertThrows(EntityNotFoundException.class, () -> {
-                CrewServiceImpl.getInstance().findAllCrewMembersByCriteria(finalCriteria);
-            });
+            assertThrows(EntityNotFoundException.class, () -> CrewServiceImpl.getInstance().findAllCrewMembersByCriteria(finalCriteria));
         } catch (EntityNotFoundException e) {
             //
         }
     }
 
     @Test
-    void findCrewMemberByCriteria() throws EntityNotFoundException {
+    void findCrewMemberByCriteria() {
         CrewMemberCriteria criteria = (CrewMemberCriteria) CrewMemberCriteria.newBuilder()
                 .setRank(Rank.SECOND_OFFICER)
                 .build();
@@ -74,10 +71,8 @@ class CrewServiceImplTest {
                 .setName("test")
                 .build();
         CrewMemberCriteria finalCriteria2 = criteria;
-        assertThrows(EntityNotFoundException.class, () -> {
-            CrewServiceImpl.getInstance().findCrewMemberByCriteria(finalCriteria2)
-                    .orElseThrow(() -> new EntityNotFoundException(""));
-        });
+        assertThrows(EntityNotFoundException.class, () -> CrewServiceImpl.getInstance().findCrewMemberByCriteria(finalCriteria2)
+                .orElseThrow(() -> new EntityNotFoundException("")));
     }
 
     @Test

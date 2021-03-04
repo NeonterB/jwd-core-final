@@ -19,4 +19,6 @@ public interface MissionService {
     void assignCrewMemberOnMission(CrewMember crewMember) throws RuntimeException;
 
     FlightMission createMission(FlightMission flightMission);
+
+    void cancelMission(FlightMission flightMission);
 }

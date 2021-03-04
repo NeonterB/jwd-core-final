@@ -3,6 +3,11 @@ package com.epam.jwd.core_final.domain;
 import java.util.Map;
 
 public class SpaceshipFactory implements EntityFactory<Spaceship>{
+    /**
+     * create new {@link Spaceship}
+     * @param args {@link String} - name, {@link Long} - flightDistance, {@link Map} - crew
+     * @return brand new {@link Spaceship}
+     */
     @SuppressWarnings("unchecked")
     @Override
     public Spaceship create(Object... args) {
