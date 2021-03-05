@@ -1,11 +1,17 @@
 package com.epam.jwd.core_final.domain;
 
+import com.epam.jwd.core_final.exception.EntityNotFoundException;
+import com.epam.jwd.core_final.service.SpacemapService;
+import com.epam.jwd.core_final.service.impl.CrewServiceImpl;
+import com.epam.jwd.core_final.service.impl.SpaceshipServiceImpl;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
+import java.time.ZoneId;
+import java.util.*;
 
 /**
  * Expected fields:
@@ -16,25 +22,34 @@ import java.util.Objects;
  * distance {@link Long} - missions distance
  * assignedSpaceship {@link Spaceship} - not defined by default
  * assignedCrew {@link java.util.List<CrewMember>} - list of missions members based on ship capacity - not defined by default
- * missionResult {@link MissionResult}
+ * missionResult {@link MissionStatus}
  * from {@link Planet}
  * to {@link Planet}
  */
-public class FlightMission extends AbstractBaseEntity {
+public class FlightMission extends AbstractBaseEntity implements Runnable {
+    private static final Logger logger = LoggerFactory.getLogger(FlightMission.class);
+
+    private final Long distance;
+    private final Planet from;
+    private final Planet to;
+
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private Long distance;
     private Spaceship assignedSpaceship;
-    private List<CrewMember> assignedCrew;
-    private MissionResult missionResult;
-    private Planet from;
-    private Planet to;
+    private List<CrewMember> assignedCrew = new ArrayList<>();
+    private MissionStatus missionStatus;
 
     FlightMission(@NotNull String name, LocalDateTime startDate, Planet from, Planet to) {
         super(name);
         this.startDate = startDate;
         this.from = from;
         this.to = to;
+        this.distance = SpacemapService.getDistanceBetweenPlanets(from, to);
+        this.endDate = startDate.plusSeconds(distance);
+        this.missionStatus = MissionStatus.PLANNED;
+        new Timer().schedule(new FlightMissionExecutor(), Date
+                .from(startDate.atZone(ZoneId.systemDefault())
+                        .toInstant()));
     }
 
     public LocalDateTime getStartDate() {
@@ -57,8 +72,8 @@ public class FlightMission extends AbstractBaseEntity {
         return assignedCrew;
     }
 
-    public MissionResult getMissionResult() {
-        return missionResult;
+    public MissionStatus getMissionResult() {
+        return missionStatus;
     }
 
     public Planet getFrom() {
@@ -69,17 +84,63 @@ public class FlightMission extends AbstractBaseEntity {
         return to;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        FlightMission that = (FlightMission) o;
-        return startDate.equals(that.startDate) && endDate.equals(that.endDate) && distance.equals(that.distance) && assignedSpaceship.equals(that.assignedSpaceship) && assignedCrew.equals(that.assignedCrew) && missionResult == that.missionResult && from.equals(that.from) && to.equals(that.to);
+    public MissionStatus getMissionStatus() {
+        return missionStatus;
+    }
+
+    public void setAssignedSpaceship(Spaceship assignedSpaceship) {
+        this.assignedSpaceship = assignedSpaceship;
+    }
+
+    public void setMissionStatus(MissionStatus missionStatus) {
+        this.missionStatus = missionStatus;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), startDate, endDate, distance, assignedSpaceship, assignedCrew, missionResult, from, to);
+    public void run() {
+        if (missionStatus.equals(MissionStatus.READY)) {
+            logger.debug("{} started", this);
+            try {
+                missionStatus = MissionStatus.IN_PROGRESS;
+                Thread.sleep(distance * 1000);
+                if (new Random().nextInt(100) < 5) {
+                    missionStatus = MissionStatus.FAILED;
+                    logger.debug("{} failed", this);
+                    for (CrewMember crewMember : assignedCrew) {
+                        CrewServiceImpl.getInstance().deleteCrewMember(crewMember);
+                    }
+                    SpaceshipServiceImpl.getInstance().deleteSpaceship(assignedSpaceship);
+                    return;
+                } else {
+                    missionStatus = MissionStatus.COMPLETED;
+                    logger.debug("{} completed", this);
+                }
+            } catch (InterruptedException | IOException | EntityNotFoundException e) {
+                logger.error(e.getMessage());
+            }
+        } else{
+            missionStatus = MissionStatus.CANCELLED;
+            logger.debug("{} cancelled", this);
+        }
+        for (CrewMember crewMember : assignedCrew) {
+            crewMember.setReadyForNextMission(true);
+        }
+        assignedSpaceship.setReadyForNextMission(true);
+    }
+
+    @Override
+    public String toString() {
+        return "FlightMission{" +
+                "name=" + getName() +
+                ", from=" + from +
+                ", to=" + to +
+                ", startDate=" + startDate +
+                '}';
+    }
+
+    class FlightMissionExecutor extends TimerTask {
+        public void run() {
+            FlightMission.this.run();
+        }
     }
 }

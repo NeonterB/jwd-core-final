@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 public class CrewServiceImpl implements CrewService {
-    private static final CrewServiceImpl instance = new CrewServiceImpl();
+    private static final CrewServiceImpl instance = (CrewServiceImpl) CrewServiceProxy.newInstance(new CrewServiceImpl());
 
     private CrewServiceImpl() {
     }

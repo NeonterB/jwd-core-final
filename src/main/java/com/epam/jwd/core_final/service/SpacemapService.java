@@ -7,10 +7,10 @@ public interface SpacemapService {
 
     Planet getRandomPlanet() throws EntityNotFoundException;
 
-    static int getDistanceBetweenPlanets(Planet first, Planet second){
+    static long getDistanceBetweenPlanets(Planet first, Planet second){
         Planet.Point firstPoint = first.getLocation();
         Planet.Point secondPoint = second.getLocation();
-        return (int) Math.sqrt(
+        return (long) Math.sqrt(
                 (firstPoint.getX() - secondPoint.getX()) * (firstPoint.getX() - secondPoint.getX()) +
                         (firstPoint.getY() - secondPoint.getY()) * (firstPoint.getY() - secondPoint.getY())
         );

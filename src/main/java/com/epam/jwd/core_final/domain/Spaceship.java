@@ -40,6 +40,10 @@ public class Spaceship extends AbstractBaseEntity {
         return isReadyForNextMission;
     }
 
+    public void setReadyForNextMission(Boolean readyForNextMission) {
+        isReadyForNextMission = readyForNextMission;
+    }
+
     public String convertMapToString(Map<Role, Short> map) {
         StringBuilder mapAsString = new StringBuilder("{");
         for (Role key : map.keySet()) {

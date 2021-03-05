@@ -14,7 +14,7 @@ public class FlightMissionCriteria extends Criteria<FlightMission> {
     private Long distance;
     private Spaceship assignedSpaceship;
     private List<CrewMember> assignedCrew;
-    private MissionResult missionResult;
+    private MissionStatus missionStatus;
     private Planet from;
     private Planet to;
 
@@ -29,7 +29,7 @@ public class FlightMissionCriteria extends Criteria<FlightMission> {
                 (distance == null || mission.getDistance().equals(distance)) &&
                 (assignedCrew == null || mission.getAssignedCrew().equals(assignedCrew)) &&
                 (assignedSpaceship == null || mission.getAssignedSpaceship().equals(assignedSpaceship)) &&
-                (missionResult == null || mission.getMissionResult().equals(missionResult));
+                (missionStatus == null || mission.getMissionResult().equals(missionStatus));
     }
 
     public static FlightMissionCriteriaBuilder newBuilder() {
@@ -46,7 +46,7 @@ public class FlightMissionCriteria extends Criteria<FlightMission> {
                 ", distance=" + distance +
                 ", assignedSpaceship=" + assignedSpaceship +
                 ", assignedCrew=" + assignedCrew +
-                ", missionResult=" + missionResult +
+                ", missionResult=" + missionStatus +
                 ", from=" + from +
                 ", to=" + to +
                 '}';
@@ -102,7 +102,7 @@ public class FlightMissionCriteria extends Criteria<FlightMission> {
             criteria.distance = FlightMissionCriteria.this.distance;
             criteria.assignedSpaceship = FlightMissionCriteria.this.assignedSpaceship;
             criteria.assignedCrew = FlightMissionCriteria.this.assignedCrew;
-            criteria.missionResult = FlightMissionCriteria.this.missionResult;
+            criteria.missionStatus = FlightMissionCriteria.this.missionStatus;
             criteria.from = FlightMissionCriteria.this.from;
             criteria.to = FlightMissionCriteria.this.to;
             return criteria;

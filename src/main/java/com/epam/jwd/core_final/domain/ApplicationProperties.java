@@ -78,4 +78,36 @@ public class ApplicationProperties {
     public void setDateTimeFormat(String dateTimeFormat) {
         this.dateTimeFormat = dateTimeFormat;
     }
+
+    public String getInputRootDir() {
+        return inputRootDir;
+    }
+
+    public String getOutputRootDir() {
+        return outputRootDir;
+    }
+
+    public String getCrewFileName() {
+        return crewFileName;
+    }
+
+    public String getMissionFileName() {
+        return missionFileName;
+    }
+
+    public String getSpaceShipFileName() {
+        return spaceShipFileName;
+    }
+
+    public String getSpaceMapFileName() {
+        return spaceMapFileName;
+    }
+
+    public Integer getFileRefreshRate() {
+        return fileRefreshRate;
+    }
+
+    public String getDateTimeFormat() {
+        return dateTimeFormat;
+    }
 }

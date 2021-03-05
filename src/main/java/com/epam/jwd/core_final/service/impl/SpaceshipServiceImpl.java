@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 public class SpaceshipServiceImpl implements SpaceshipService {
-    private static SpaceshipServiceImpl instance = new SpaceshipServiceImpl();
+    private static SpaceshipServiceImpl instance = (SpaceshipServiceImpl) SpaceshipServiceProxy.newInstance(new SpaceshipServiceImpl());
 
     private SpaceshipServiceImpl(){}
 

@@ -13,9 +13,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class NassaContext implements ApplicationContext {
@@ -24,9 +22,27 @@ public class NassaContext implements ApplicationContext {
 
     // no getters/setters for them
     private Collection<EntityWrap<CrewMember>> crewMembers;
+    private Boolean canAccessCrewCache = true;
     private Collection<EntityWrap<Spaceship>> spaceships;
+    private Boolean canAccessShipsCache = true;
     private Collection<Planet> planetMap;
     private Collection<FlightMission> missions;
+
+    public Boolean getCanAccessCrewCache() {
+        return canAccessCrewCache;
+    }
+
+    public void setCanAccessCrewCache(Boolean canAccessCrewCache) {
+        this.canAccessCrewCache = canAccessCrewCache;
+    }
+
+    public Boolean getCanAccessShipsCache() {
+        return canAccessShipsCache;
+    }
+
+    public void setCanAccessShipsCache(Boolean canAccessShipsCache) {
+        this.canAccessShipsCache = canAccessShipsCache;
+    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -78,7 +94,8 @@ public class NassaContext implements ApplicationContext {
                     .map(EntityWrap::new)
                     .collect(Collectors.toCollection(LinkedHashSet::new));
             planetMap = EntityRepositoryImpl.getInstance().getAll(Planet.class);
-            missions = new LinkedHashSet<>();
+            missions = new LinkedList<>();
+            new Timer().schedule(new CacheUpdater(), 10000, ApplicationProperties.getInstance().getFileRefreshRate());
         } catch (IOException e) {
             logger.error(e.getMessage());
             throw new InvalidStateException("Bad input files", e);
@@ -95,20 +112,32 @@ public class NassaContext implements ApplicationContext {
     @SuppressWarnings("unchecked")
     @Override
     public <T extends BaseEntity> void updateCache(Class<T> tClass) {
-        assert tClass.equals(CrewMember.class) || tClass.equals(Spaceship.class);
-
-        Collection<EntityWrap<T>> cache = (Collection<EntityWrap<T>>) retrieveBaseEntityList(tClass);
-        try {
-            cache.removeIf(wrap -> !wrap.isValid());
-            Collection<EntityWrap<T>> entityWraps = (Collection<EntityWrap<T>>) EntityRepositoryImpl.getInstance().getAll(tClass)
-                    .stream()
-                    .map(EntityWrap::new)
-                    .collect(Collectors.toCollection(LinkedHashSet::new));
-            cache.addAll(entityWraps);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
+        if ((tClass.equals(CrewMember.class) && canAccessCrewCache) ||
+                (tClass.equals(Spaceship.class) && canAccessShipsCache)) {
+            Collection<EntityWrap<T>> cache = (Collection<EntityWrap<T>>) retrieveBaseEntityList(tClass);
+            try {
+                cache.removeIf(wrap -> !wrap.isValid());
+                Collection<EntityWrap<T>> entityWraps = EntityRepositoryImpl.getInstance().getAll(tClass)
+                        .stream()
+                        .map(EntityWrap::new)
+                        .collect(Collectors.toCollection(LinkedHashSet::new));
+                cache.addAll(entityWraps);
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
+            logger.debug("{} cache updated", tClass.getSimpleName());
         }
-        logger.debug("{} cache updated", tClass.getSimpleName());
+    }
+
+    class CacheUpdater extends TimerTask {
+        public void run() {
+            if (canAccessCrewCache){
+                updateCache(CrewMember.class);
+            }
+            if (canAccessShipsCache){
+                updateCache(Spaceship.class);
+            }
+        }
     }
 
     public static void main(String[] args) throws InvalidStateException {
