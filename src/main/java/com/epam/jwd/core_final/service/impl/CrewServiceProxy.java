@@ -19,9 +19,11 @@ public class CrewServiceProxy implements InvocationHandler {
             Object proxy, Method m, Object[] args)
             throws Throwable {
         Object result;
-        ((NassaContext) Main.getApplicationMenu().getApplicationContext()).setCanAccessCrewCache(false);
+        NassaContext context = (NassaContext) Main.getApplicationMenu().getApplicationContext();
+        while(!context.getCanAccessCrewCache()) Thread.currentThread().wait(1000);
+        context.setCanAccessCrewCache(false);
         result = m.invoke(obj, args);
-        ((NassaContext) Main.getApplicationMenu().getApplicationContext()).setCanAccessCrewCache(true);
+        context.setCanAccessCrewCache(true);
         return result;
     }
 

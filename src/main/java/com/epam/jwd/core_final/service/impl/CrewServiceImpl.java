@@ -17,12 +17,12 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 public class CrewServiceImpl implements CrewService {
-    private static final CrewServiceImpl instance = (CrewServiceImpl) CrewServiceProxy.newInstance(new CrewServiceImpl());
+    private static final CrewService instance = (CrewService) CrewServiceProxy.newInstance(new CrewServiceImpl());
 
     private CrewServiceImpl() {
     }
 
-    public static CrewServiceImpl getInstance() {
+    public static CrewService getInstance() {
         return instance;
     }
 

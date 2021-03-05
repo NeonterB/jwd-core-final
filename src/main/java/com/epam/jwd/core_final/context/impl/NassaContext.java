@@ -132,10 +132,14 @@ public class NassaContext implements ApplicationContext {
     class CacheUpdater extends TimerTask {
         public void run() {
             if (canAccessCrewCache){
+                canAccessCrewCache = false;
                 updateCache(CrewMember.class);
+                canAccessCrewCache = true;
             }
             if (canAccessShipsCache){
+                canAccessShipsCache = false;
                 updateCache(Spaceship.class);
+                canAccessShipsCache = true;
             }
         }
     }

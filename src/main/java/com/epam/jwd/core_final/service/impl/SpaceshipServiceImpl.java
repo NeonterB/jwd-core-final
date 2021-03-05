@@ -9,6 +9,7 @@ import com.epam.jwd.core_final.domain.Spaceship;
 import com.epam.jwd.core_final.exception.EntityExistsException;
 import com.epam.jwd.core_final.exception.EntityNotFoundException;
 import com.epam.jwd.core_final.repository.impl.EntityRepositoryImpl;
+import com.epam.jwd.core_final.service.CrewService;
 import com.epam.jwd.core_final.service.SpaceshipService;
 
 import java.io.IOException;
@@ -18,11 +19,11 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 public class SpaceshipServiceImpl implements SpaceshipService {
-    private static SpaceshipServiceImpl instance = (SpaceshipServiceImpl) SpaceshipServiceProxy.newInstance(new SpaceshipServiceImpl());
+    private static SpaceshipService instance = (SpaceshipService) SpaceshipServiceProxy.newInstance(new SpaceshipServiceImpl());
 
     private SpaceshipServiceImpl(){}
 
-    public static SpaceshipServiceImpl getInstance() {
+    public static SpaceshipService getInstance() {
         return instance;
     }
 

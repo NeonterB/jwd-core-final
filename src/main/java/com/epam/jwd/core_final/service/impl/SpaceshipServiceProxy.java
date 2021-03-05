@@ -20,9 +20,11 @@ public class SpaceshipServiceProxy implements InvocationHandler {
             Object proxy, Method m, Object[] args)
             throws Throwable {
         Object result;
-        ((NassaContext) Main.getApplicationMenu().getApplicationContext()).setCanAccessShipsCache(false);
+        NassaContext context = (NassaContext) Main.getApplicationMenu().getApplicationContext();
+        while(!context.getCanAccessShipsCache()) Thread.currentThread().wait(1000);
+        context.setCanAccessShipsCache(false);
         result = m.invoke(service, args);
-        ((NassaContext) Main.getApplicationMenu().getApplicationContext()).setCanAccessShipsCache(true);
+        context.setCanAccessShipsCache(true);
         return result;
     }
 
