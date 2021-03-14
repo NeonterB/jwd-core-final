@@ -1,12 +1,9 @@
 package com.epam.jwd.core_final.repository.impl;
 
-import com.epam.jwd.core_final.Main;
-import com.epam.jwd.core_final.context.ApplicationContext;
+import com.epam.jwd.core_final.domain.ApplicationProperties;
 import com.epam.jwd.core_final.domain.BaseEntity;
 import com.epam.jwd.core_final.domain.CrewMember;
-import com.epam.jwd.core_final.domain.EntityWrap;
 import com.epam.jwd.core_final.domain.Spaceship;
-import com.epam.jwd.core_final.exception.EntityExistsException;
 import com.epam.jwd.core_final.exception.EntityNotFoundException;
 import com.epam.jwd.core_final.exception.UnknownEntityException;
 import com.epam.jwd.core_final.io.EraseStrategy;
@@ -17,9 +14,16 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -60,6 +64,24 @@ public class EntityRepositoryImpl implements EntityRepository {
                 })
                 .findFirst()
                 .orElseThrow(() -> new UnknownEntityException(entityClass.getSimpleName()));
+    }
+
+    public <T extends BaseEntity> LocalDateTime getLastModifiedTime(Class<T> tClass) throws IOException, IllegalAccessException {
+        URL path = null;
+        if (tClass.equals(CrewMember.class)) {
+            path = getClass().getClassLoader().getResource(ApplicationProperties.getInstance().getCrewFileDir());
+        } else if (tClass.equals(Spaceship.class)) {
+            path = getClass().getClassLoader().getResource(ApplicationProperties.getInstance().getSpaceshipFileDir());
+        } else throw new IllegalAccessException(tClass.getSimpleName() + " is not for modifying");
+        File file = null;
+        try {
+            assert path != null;
+            file = new File(path.toURI());
+        } catch (URISyntaxException e) {
+            logger.error(e.getMessage());
+        }
+        BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+        return LocalDateTime.ofInstant(attr.lastModifiedTime().toInstant(), ZoneId.systemDefault());
     }
 
     @Override

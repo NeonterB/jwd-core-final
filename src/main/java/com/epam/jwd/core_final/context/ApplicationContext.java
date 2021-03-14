@@ -5,6 +5,7 @@ import com.epam.jwd.core_final.domain.BaseEntity;
 import com.epam.jwd.core_final.domain.EntityWrap;
 import com.epam.jwd.core_final.exception.InvalidStateException;
 
+import java.io.IOException;
 import java.util.Collection;
 
 public interface ApplicationContext {

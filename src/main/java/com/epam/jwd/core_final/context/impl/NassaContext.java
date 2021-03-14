@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,8 @@ public class NassaContext implements ApplicationContext {
     private Boolean canAccessShipsCache = true;
     private Collection<Planet> planetMap;
     private Collection<FlightMission> missions;
+
+    private LocalDateTime lastUpdate;
 
     public Boolean getCanAccessCrewCache() {
         return canAccessCrewCache;
@@ -114,6 +117,11 @@ public class NassaContext implements ApplicationContext {
     @SuppressWarnings("unchecked")
     @Override
     public <T extends BaseEntity> void updateCache(Class<T> tClass) {
+        try {
+            if (lastUpdate.isAfter(EntityRepositoryImpl.getInstance().getLastModifiedTime(tClass))) return;
+        } catch (IOException | IllegalAccessException e) {
+            logger.error(e.getMessage());
+        }
         Collection<EntityWrap<T>> cache = (Collection<EntityWrap<T>>) retrieveBaseEntityList(tClass);
         try {
             cache.removeIf(wrap -> !wrap.isValid());
@@ -125,6 +133,7 @@ public class NassaContext implements ApplicationContext {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+        lastUpdate = LocalDateTime.now();
         logger.debug("{} cache updated", tClass.getSimpleName());
     }
 

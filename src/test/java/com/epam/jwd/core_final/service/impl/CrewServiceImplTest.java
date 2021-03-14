@@ -26,30 +26,26 @@ class CrewServiceImplTest {
 
     @Test
     void findAllCrewMembersByCriteria() {
-        try {
-            CrewMemberCriteria criteria = (CrewMemberCriteria) CrewMemberCriteria.newBuilder()
-                    .setRank(Rank.SECOND_OFFICER)
-                    .build();
+        CrewMemberCriteria criteria = (CrewMemberCriteria) CrewMemberCriteria.newBuilder()
+                .setRank(Rank.SECOND_OFFICER)
+                .build();
 
-            assertEquals(3, CrewServiceImpl.getInstance().findAllCrewMembersByCriteria(criteria).size());
+        assertEquals(3, CrewServiceImpl.getInstance().findAllCrewMembersByCriteria(criteria).size());
 
 
-            criteria = (CrewMemberCriteria) CrewMemberCriteria.newBuilder()
-                    .setRank(Rank.SECOND_OFFICER)
-                    .setRole(Role.PILOT)
-                    .build();
-            assertEquals(2, CrewServiceImpl.getInstance().findAllCrewMembersByCriteria(criteria).size());
+        criteria = (CrewMemberCriteria) CrewMemberCriteria.newBuilder()
+                .setRank(Rank.SECOND_OFFICER)
+                .setRole(Role.PILOT)
+                .build();
+        assertEquals(2, CrewServiceImpl.getInstance().findAllCrewMembersByCriteria(criteria).size());
 
-            criteria = (CrewMemberCriteria) CrewMemberCriteria.newBuilder()
-                    .setRank(Rank.SECOND_OFFICER)
-                    .setRole(Role.PILOT)
-                    .setName("test")
-                    .build();
-            CrewMemberCriteria finalCriteria = criteria;
-            assertThrows(EntityNotFoundException.class, () -> CrewServiceImpl.getInstance().findAllCrewMembersByCriteria(finalCriteria));
-        } catch (EntityNotFoundException e) {
-            //
-        }
+        criteria = (CrewMemberCriteria) CrewMemberCriteria.newBuilder()
+                .setRank(Rank.SECOND_OFFICER)
+                .setRole(Role.PILOT)
+                .setName("test")
+                .build();
+        CrewMemberCriteria finalCriteria = criteria;
+        assertThrows(EntityNotFoundException.class, () -> CrewServiceImpl.getInstance().findAllCrewMembersByCriteria(finalCriteria));
     }
 
     @Test

@@ -1,6 +1,6 @@
 package com.epam.jwd.core_final;
 
-import com.epam.jwd.core_final.command.Command;
+import com.epam.jwd.core_final.context.Command;
 import com.epam.jwd.core_final.context.Application;
 import com.epam.jwd.core_final.context.ApplicationMenu;
 import com.epam.jwd.core_final.exception.InvalidStateException;

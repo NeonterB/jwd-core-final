@@ -1,6 +1,5 @@
 package com.epam.jwd.core_final.context;
 
-import com.epam.jwd.core_final.command.Command;
 import com.epam.jwd.core_final.criteria.CrewMemberCriteria;
 import com.epam.jwd.core_final.criteria.Criteria;
 import com.epam.jwd.core_final.criteria.FlightMissionCriteria;
@@ -301,6 +300,9 @@ public interface ApplicationMenu {
         ApplicationProperties properties = ApplicationProperties.getInstance();
 
         Path outputDir = Paths.get(properties.getOutputRootDir() + "/");
+        if (!outputDir.toFile().exists()) {
+            outputDir.toFile().mkdir();
+        }
         File missionOutput = new File(outputDir + "/" + properties.getMissionFileName() + ".json");
         if (!missionOutput.exists() && !missionOutput.createNewFile())
             throw new InvalidStateException("output file cannot be created");
