@@ -1,5 +1,7 @@
 package com.epam.jwd.core_final.domain;
 
+import java.util.Objects;
+
 /**
  * Expected fields:
  * <p>
@@ -19,24 +21,30 @@ public class Planet extends AbstractBaseEntity{
             return x;
         }
 
-        public void setX(Integer x) {
-            this.x = x;
-        }
-
         public Integer getY() {
             return y;
         }
-
-        public void setY(Integer y) {
-            this.y = y;
-        }
     }
 
-    private Point location;
+    private final Point location;
 
     Planet(String name, Integer x, Integer y) {
         super(name);
         this.location = new Point(x, y);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Planet planet = (Planet) o;
+        return Objects.equals(location, planet.location);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), location);
     }
 
     public Point getLocation() {
@@ -46,7 +54,8 @@ public class Planet extends AbstractBaseEntity{
     @Override
     public String toString() {
         return "Planet{" +
-                "name=" + getName() +
+                "id=" + getId() +
+                ", name=" + getName() +
                 ", x=" + location.x +
                 ", y=" + location.y +
                 '}';

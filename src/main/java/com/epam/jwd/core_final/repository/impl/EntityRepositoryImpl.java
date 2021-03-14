@@ -68,7 +68,7 @@ public class EntityRepositoryImpl implements EntityRepository {
         try {
             ReadStrategy<T> strategy = (ReadStrategy<T>) getStrategyImplementation(ReadStrategy.class, tClass).newInstance();
             collection = strategy.readEntities();
-        } catch (UnknownEntityException | IllegalAccessException | InstantiationException e) {
+        } catch (IllegalAccessException | InstantiationException e) {
             logger.error(e.getMessage());
         }
         logger.debug("{} entities were read from file", tClass);
@@ -76,12 +76,12 @@ public class EntityRepositoryImpl implements EntityRepository {
     }
 
     @Override
-    public <T extends BaseEntity> void create(T entity) throws EntityExistsException, IOException {
+    public <T extends BaseEntity> void create(T entity) throws IOException {
         assert entity.getClass().equals(CrewMember.class) || entity.getClass().equals(Spaceship.class);
         try {
             WriteStrategy<T> strategy = (WriteStrategy<T>) getStrategyImplementation(WriteStrategy.class, entity.getClass()).newInstance();
             strategy.writeEntity(entity);
-        } catch (UnknownEntityException | InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             logger.error(e.getMessage());
         }
         logger.debug("{} was written to file", entity);

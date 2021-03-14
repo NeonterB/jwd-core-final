@@ -15,7 +15,7 @@ public class CrewEraser implements EraseStrategy<CrewMember> {
     @Override
     public void erase(CrewMember entity) throws EntityNotFoundException, IOException {
         Queue<String> hashLines = new LinkedList<>();
-        String line = null;
+        String line;
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
                 Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(
@@ -32,7 +32,7 @@ public class CrewEraser implements EraseStrategy<CrewMember> {
                 line = reader.readLine();
             }
             int index = line.indexOf(memberToDelete.toString());
-            if (index == -1) throw new EntityNotFoundException(entity.toString() + " not found");
+            if (index == -1) throw new EntityNotFoundException("CrewMember", entity);
             line = StringUtils.replaceIgnoreCase(line, memberToDelete.toString(), "");
 
         }

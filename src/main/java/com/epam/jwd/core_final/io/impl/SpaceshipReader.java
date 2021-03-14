@@ -21,18 +21,7 @@ public class SpaceshipReader implements ReadStrategy<Spaceship> {
                 while (line.charAt(0) == '#') {
                     line = reader.readLine();
                 }
-                String[] args = line.split(";");
-                if (args.length != 3) throw new IOException("Bad input file - spaceships");
-                //Map parsing
-                args[2] = args[2].substring(1, args[2].length() - 1);
-                String[] pairs = args[2].split(",");
-                Map<Role, Short> crew = new HashMap<>();
-                for (String pair : pairs) {
-                    String[] keyValue = pair.split(":");
-                    crew.put(Role.resolveRoleById(Integer.parseInt(keyValue[0])), Short.valueOf(keyValue[1]));
-                }
-
-                spaceships.add(factory.create(args[0], Long.valueOf(args[1]), crew));
+                spaceships.add(factory.create(line));
             }
         }
         return spaceships;

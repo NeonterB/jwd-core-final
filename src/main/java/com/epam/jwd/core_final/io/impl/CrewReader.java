@@ -27,12 +27,7 @@ public class CrewReader implements ReadStrategy<CrewMember> {
             }
             String[] members = line.split(";");
             for (String member : members) {
-                String[] args = member.split(",");
-                crewMembers.add(factory.create(
-                        Role.resolveRoleById(Integer.parseInt(args[0])),
-                        args[1],
-                        Rank.resolveRankById(Integer.parseInt(args[2]))
-                ));
+                crewMembers.add(factory.create(member));
             }
         }
         return crewMembers;

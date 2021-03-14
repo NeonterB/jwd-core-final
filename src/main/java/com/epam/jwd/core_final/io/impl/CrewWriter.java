@@ -13,11 +13,9 @@ import java.util.Objects;
 public class CrewWriter implements WriteStrategy<CrewMember> {
     @Override
     public void writeEntity(CrewMember crewMember) throws IOException {
-        try (FileWriter writer = new FileWriter(new File(
-                Objects.requireNonNull(getClass().getClassLoader().getResource(
-                        ApplicationProperties.getInstance().getCrewFileDir()
-                )).getPath()
-        ), true)) {
+        try (FileWriter writer = new FileWriter(Objects.requireNonNull(getClass().getClassLoader().getResource(
+                ApplicationProperties.getInstance().getCrewFileDir()
+        )).getPath(), true)) {
             writer.write(
                     crewMember.getRole().getId() + "," +
                             crewMember.getName() + "," +

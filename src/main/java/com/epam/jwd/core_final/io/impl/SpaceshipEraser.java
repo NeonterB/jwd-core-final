@@ -37,7 +37,7 @@ public class SpaceshipEraser implements EraseStrategy<Spaceship> {
                 } else wasFound = true;
                 line = reader.readLine();
             }
-            if (!wasFound) throw new EntityNotFoundException(entity + " not found");
+            if (!wasFound) throw new EntityNotFoundException("Spaceship", entity);
         }
 
         try (FileWriter writer = new FileWriter(new File(

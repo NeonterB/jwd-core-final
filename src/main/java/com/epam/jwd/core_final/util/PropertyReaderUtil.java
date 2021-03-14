@@ -11,7 +11,7 @@ import java.util.Properties;
 
 public final class PropertyReaderUtil {
 
-    private static Logger logger = LoggerFactory.getLogger(PropertyReaderUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(PropertyReaderUtil.class);
 
     private static final Properties properties = new Properties();
 

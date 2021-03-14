@@ -34,7 +34,7 @@ public enum Role implements BaseEntity {
      *
      * @throws UnknownEntityException if such id does not exist
      */
-    public static Role resolveRoleById(int id) {
+    public static Role resolveRoleById(long id) {
         return Arrays.stream(Role.values())
                 .filter(role -> role.id == id)
                 .findFirst()

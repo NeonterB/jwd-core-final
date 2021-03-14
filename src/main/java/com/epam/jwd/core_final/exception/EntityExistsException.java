@@ -1,17 +1,17 @@
 package com.epam.jwd.core_final.exception;
 
-public class EntityExistsException extends Exception {
-    private final String entityName;
-    private final String message;
+import com.epam.jwd.core_final.domain.BaseEntity;
 
-    public EntityExistsException(String entityName, String msg) {
+public class EntityExistsException extends Exception {
+    private final BaseEntity entity;
+
+    public EntityExistsException(BaseEntity entity) {
         super();
-        this.entityName = entityName;
-        this.message = msg;
+        this.entity = entity;
     }
 
     @Override
     public String getMessage() {
-        return message + "; Entity name=" + entityName;
+        return entity + " already exists";
     }
 }

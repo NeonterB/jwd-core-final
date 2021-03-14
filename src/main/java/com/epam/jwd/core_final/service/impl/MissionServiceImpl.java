@@ -4,6 +4,7 @@ import com.epam.jwd.core_final.Main;
 import com.epam.jwd.core_final.context.ApplicationContext;
 import com.epam.jwd.core_final.criteria.Criteria;
 import com.epam.jwd.core_final.domain.*;
+import com.epam.jwd.core_final.exception.EntityExistsException;
 import com.epam.jwd.core_final.exception.EntityNotFoundException;
 import com.epam.jwd.core_final.exception.EntityOccupiedException;
 import com.epam.jwd.core_final.service.MissionService;
@@ -18,9 +19,10 @@ import java.util.stream.Collectors;
 public class MissionServiceImpl implements MissionService {
     private static final MissionServiceImpl instance = new MissionServiceImpl();
 
-    private MissionServiceImpl(){}
+    private MissionServiceImpl() {
+    }
 
-    public static MissionServiceImpl getInstance(){
+    public static MissionServiceImpl getInstance() {
         return instance;
     }
 
@@ -33,24 +35,21 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
-    public Collection<FlightMission> findAllMissionsByCriteria(Criteria<FlightMission> criteria) throws EntityNotFoundException {
+    public Collection<FlightMission> findAllMissionsByCriteria(Criteria<FlightMission> criteria) {
         ApplicationContext context = Main.getApplicationMenu().getApplicationContext();
-        Collection<FlightMission> foundMissions = ((Collection<FlightMission>) context.retrieveBaseEntityList(FlightMission.class)).stream()
+        return ((Collection<FlightMission>) context.retrieveBaseEntityList(FlightMission.class)).stream()
                 .filter(criteria::meetsCriteria).collect(Collectors.toList());
-        if (foundMissions.isEmpty())
-            throw new EntityNotFoundException("Missions with criteria " + criteria + " not found");
-        return foundMissions;
     }
 
     @Override
-    public Optional<FlightMission> findMissionByCriteria(Criteria<FlightMission> criteria) throws EntityNotFoundException {
+    public Optional<FlightMission> findMissionByCriteria(Criteria<FlightMission> criteria) {
         return findAllMissionsByCriteria(criteria).stream().findAny();
     }
 
     @Override
     public void assignCrewMemberOnMission(FlightMission mission, CrewMember crewMember) throws EntityOccupiedException {
-        if (mission.getMissionStatus().equals(MissionStatus.READY))
-            throw new EntityOccupiedException("Mission is filled");
+        if (!mission.getMissionStatus().equals(MissionStatus.PLANNED))
+            throw new EntityOccupiedException("Mission is off");
         if (!crewMember.isReadyForNextMission())
             throw new EntityOccupiedException("CrewMember", crewMember + " is busy");
         if (mission.getAssignedSpaceship() == null) throw new NullPointerException("Assign spaceship first");
@@ -67,29 +66,27 @@ public class MissionServiceImpl implements MissionService {
             throw new IllegalArgumentException("Can't fit " + crewMember + " into the " + mission.getAssignedSpaceship());
         short maxCrewAmount = spaceshipCrew.values().stream()
                 .reduce((short) 0, (subtotal, element) -> (short) (subtotal + element));
-        if (maxCrewAmount == (short) mission.getAssignedCrew().size()){
+        if (maxCrewAmount == (short) mission.getAssignedCrew().size()) {
             mission.setMissionStatus(MissionStatus.READY);
         }
     }
 
     @Override
     public void assignSpaceshipOnMission(FlightMission mission, Spaceship spaceship) throws EntityOccupiedException {
+        if (!mission.getMissionStatus().equals(MissionStatus.PLANNED))
+            throw new EntityOccupiedException("Mission is off");
         if (!spaceship.isReadyForNextMission()) throw new EntityOccupiedException("Spaceship", spaceship + "is busy");
-        if (spaceship.getFlightDistance() < mission.getDistance()) throw new IllegalArgumentException(spaceship + "can't fly that far");
+        if (spaceship.getFlightDistance() < mission.getDistance())
+            throw new IllegalArgumentException(spaceship + "can't fly that far");
         mission.setAssignedSpaceship(spaceship);
         spaceship.setReadyForNextMission(false);
     }
 
     @Override
-    public FlightMission createMission(FlightMission flightMission) {
+    public FlightMission createMission(FlightMission flightMission) throws EntityExistsException {
         Collection<FlightMission> missions = (Collection<FlightMission>) Main.getApplicationMenu().getApplicationContext()
                 .retrieveBaseEntityList(FlightMission.class);
-        missions.add(flightMission);
+        if (!missions.add(flightMission)) throw new EntityExistsException(flightMission);
         return flightMission;
-    }
-
-    @Override
-    public void cancelMission(FlightMission flightMission) {
-
     }
 }

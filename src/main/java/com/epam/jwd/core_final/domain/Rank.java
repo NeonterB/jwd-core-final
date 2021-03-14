@@ -34,7 +34,7 @@ public enum Rank implements BaseEntity {
      *
      * @throws UnknownEntityException if such id does not exist
      */
-    public static Rank resolveRankById(int id) {
+    public static Rank resolveRankById(long id) {
         return Arrays.stream(Rank.values())
                 .filter(rank -> rank.getId() == id)
                 .findFirst()

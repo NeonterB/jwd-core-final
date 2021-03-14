@@ -14,11 +14,9 @@ import java.util.Objects;
 public class SpaceshipWriter implements WriteStrategy<Spaceship> {
     @Override
     public void writeEntity(Spaceship spaceship) throws IOException {
-        try (FileWriter writer = new FileWriter(new File(
-                Objects.requireNonNull(getClass().getClassLoader().getResource(
-                        ApplicationProperties.getInstance().getSpaceshipFileDir()
-                )).getPath()
-        ), true)) {
+        try (FileWriter writer = new FileWriter(Objects.requireNonNull(getClass().getClassLoader().getResource(
+                ApplicationProperties.getInstance().getSpaceshipFileDir()
+        )).getPath(), true)) {
             writer.write(
                     "\n" + spaceship.getName() + ";" +
                             spaceship.getFlightDistance() + ";" +

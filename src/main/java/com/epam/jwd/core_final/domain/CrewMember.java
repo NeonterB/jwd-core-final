@@ -1,5 +1,6 @@
 package com.epam.jwd.core_final.domain;
 
+import com.epam.jwd.core_final.service.CrewService;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;

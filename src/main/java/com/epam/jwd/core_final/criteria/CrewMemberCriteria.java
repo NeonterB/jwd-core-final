@@ -27,6 +27,28 @@ public class CrewMemberCriteria extends Criteria<CrewMember> {
         return new CrewMemberCriteria().new CrewMemberCriteriaBuilder();
     }
 
+    public static Criteria<CrewMember> parseCriteria(String line) throws IllegalArgumentException {
+        CrewMemberCriteriaBuilder builder = newBuilder();
+
+        String[] args = line.split(";");
+
+        for (String s : args) {
+            String[] pair = s.split("=");
+            if (pair[0].equalsIgnoreCase("role")) {
+                builder = builder.setRole(Role.resolveRoleById(Long.parseLong(pair[1])));
+            } else if (pair[0].equalsIgnoreCase("rank")) {
+                builder = builder.setRank(Rank.resolveRankById(Long.parseLong(pair[1])));
+            } else if (pair[0].equalsIgnoreCase("isReady")) {
+                builder = builder.setReadiness(Boolean.parseBoolean(pair[1]));
+            } else if (pair[0].equalsIgnoreCase("name")) {
+                builder = (CrewMemberCriteriaBuilder) builder.setName(pair[1]);
+            } else if (pair[0].equalsIgnoreCase("id")) {
+                builder = (CrewMemberCriteriaBuilder) builder.setId(Long.parseLong(pair[1]));
+            }
+        }
+        return builder.build();
+    }
+
     @Override
     public String toString() {
         return "CrewMemberCriteria{" +
@@ -38,34 +60,34 @@ public class CrewMemberCriteria extends Criteria<CrewMember> {
                 '}';
     }
 
-    public class CrewMemberCriteriaBuilder extends Criteria<CrewMember>.Builder {
+public class CrewMemberCriteriaBuilder extends Criteria<CrewMember>.Builder {
 
-        private CrewMemberCriteriaBuilder() {
-        }
-
-        public CrewMemberCriteriaBuilder setRole(Role role) {
-            CrewMemberCriteria.this.role = role;
-            return this;
-        }
-
-        public CrewMemberCriteriaBuilder setRank(Rank rank) {
-            CrewMemberCriteria.this.rank = rank;
-            return this;
-        }
-
-        public CrewMemberCriteriaBuilder setReadiness(Boolean readiness) {
-            CrewMemberCriteria.this.isReadyForNextMission = readiness;
-            return this;
-        }
-
-        @Override
-        public Criteria<CrewMember> build() {
-            CrewMemberCriteria criteria = new CrewMemberCriteria();
-            criteria.name = CrewMemberCriteria.this.name;
-            criteria.id = CrewMemberCriteria.this.id;
-            criteria.role = CrewMemberCriteria.this.role;
-            criteria.rank = CrewMemberCriteria.this.rank;
-            return criteria;
-        }
+    private CrewMemberCriteriaBuilder() {
     }
+
+    public CrewMemberCriteriaBuilder setRole(Role role) {
+        CrewMemberCriteria.this.role = role;
+        return this;
+    }
+
+    public CrewMemberCriteriaBuilder setRank(Rank rank) {
+        CrewMemberCriteria.this.rank = rank;
+        return this;
+    }
+
+    public CrewMemberCriteriaBuilder setReadiness(Boolean readiness) {
+        CrewMemberCriteria.this.isReadyForNextMission = readiness;
+        return this;
+    }
+
+    @Override
+    public Criteria<CrewMember> build() {
+        CrewMemberCriteria criteria = new CrewMemberCriteria();
+        criteria.name = CrewMemberCriteria.this.name;
+        criteria.id = CrewMemberCriteria.this.id;
+        criteria.role = CrewMemberCriteria.this.role;
+        criteria.rank = CrewMemberCriteria.this.rank;
+        return criteria;
+    }
+}
 }

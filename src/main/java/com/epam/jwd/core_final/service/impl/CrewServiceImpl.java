@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 public class CrewServiceImpl implements CrewService {
-    private static final CrewService instance = (CrewService) CrewServiceProxy.newInstance(new CrewServiceImpl());
+    private static final CrewService instance = CrewServiceProxy.newInstance(new CrewServiceImpl());
 
     private CrewServiceImpl() {
     }
@@ -37,7 +37,7 @@ public class CrewServiceImpl implements CrewService {
     }
 
     @Override
-    public Collection<CrewMember> findAllCrewMembersByCriteria(Criteria<CrewMember> criteria) throws EntityNotFoundException {
+    public Collection<CrewMember> findAllCrewMembersByCriteria(Criteria<CrewMember> criteria) {
         ApplicationContext context = Main.getApplicationMenu().getApplicationContext();
 
         Collection<EntityWrap<CrewMember>> cache = (Collection<EntityWrap<CrewMember>>) context.retrieveBaseEntityList(CrewMember.class);
@@ -55,12 +55,11 @@ public class CrewServiceImpl implements CrewService {
                     .collect(Collectors.toList());
         }
 
-        if (foundMembers.isEmpty()) throw new EntityNotFoundException("CrewMember with criteria " + criteria + " was not found");
         return foundMembers;
     }
 
     @Override
-    public Optional<CrewMember> findCrewMemberByCriteria(Criteria<CrewMember> criteria) throws EntityNotFoundException {
+    public Optional<CrewMember> findCrewMemberByCriteria(Criteria<CrewMember> criteria) {
         return findAllCrewMembersByCriteria(criteria).stream().findAny();
     }
 
@@ -70,11 +69,11 @@ public class CrewServiceImpl implements CrewService {
 
         Collection<EntityWrap<CrewMember>> cache = (Collection<EntityWrap<CrewMember>>) context.retrieveBaseEntityList(CrewMember.class);
         if (cache.contains(new EntityWrap<>(crewMember)))
-            throw new EntityExistsException("CrewMember", crewMember.toString() + " already exists");
+            throw new EntityExistsException(crewMember);
 
         context.updateCache(crewMember.getClass());
         if (cache.contains(new EntityWrap<>(crewMember)))
-            throw new EntityExistsException("CrewMember", crewMember.toString() + " already exists");
+            throw new EntityExistsException(crewMember);
 
         EntityRepositoryImpl.getInstance().create(crewMember);
         return crewMember;

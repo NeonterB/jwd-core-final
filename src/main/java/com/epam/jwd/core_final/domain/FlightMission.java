@@ -1,9 +1,10 @@
 package com.epam.jwd.core_final.domain;
 
 import com.epam.jwd.core_final.exception.EntityNotFoundException;
-import com.epam.jwd.core_final.service.SpacemapService;
 import com.epam.jwd.core_final.service.impl.CrewServiceImpl;
+import com.epam.jwd.core_final.service.impl.SpacemapServiceImpl;
 import com.epam.jwd.core_final.service.impl.SpaceshipServiceImpl;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -44,7 +46,7 @@ public class FlightMission extends AbstractBaseEntity implements Runnable {
         this.startDate = startDate;
         this.from = from;
         this.to = to;
-        this.distance = SpacemapService.getDistanceBetweenPlanets(from, to);
+        this.distance = SpacemapServiceImpl.getInstance().getDistanceBetweenPlanets(from, to);
         this.endDate = startDate.plusSeconds(distance);
         this.missionStatus = MissionStatus.PLANNED;
         new Timer().schedule(new FlightMissionExecutor(), Date
@@ -52,10 +54,12 @@ public class FlightMission extends AbstractBaseEntity implements Runnable {
                         .toInstant()));
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     public LocalDateTime getStartDate() {
         return startDate;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     public LocalDateTime getEndDate() {
         return endDate;
     }
@@ -70,10 +74,6 @@ public class FlightMission extends AbstractBaseEntity implements Runnable {
 
     public List<CrewMember> getAssignedCrew() {
         return assignedCrew;
-    }
-
-    public MissionStatus getMissionResult() {
-        return missionStatus;
     }
 
     public Planet getFrom() {
@@ -110,31 +110,38 @@ public class FlightMission extends AbstractBaseEntity implements Runnable {
                         CrewServiceImpl.getInstance().deleteCrewMember(crewMember);
                     }
                     SpaceshipServiceImpl.getInstance().deleteSpaceship(assignedSpaceship);
-                    return;
                 } else {
                     missionStatus = MissionStatus.COMPLETED;
                     logger.debug("{} completed", this);
+                    for (CrewMember crewMember : assignedCrew) {
+                        crewMember.setReadyForNextMission(true);
+                    }
+                    assignedSpaceship.setReadyForNextMission(true);
                 }
             } catch (InterruptedException | IOException | EntityNotFoundException e) {
                 logger.error(e.getMessage());
             }
-        } else{
+        } else {
             missionStatus = MissionStatus.CANCELLED;
             logger.debug("{} cancelled", this);
         }
-        for (CrewMember crewMember : assignedCrew) {
-            crewMember.setReadyForNextMission(true);
-        }
-        assignedSpaceship.setReadyForNextMission(true);
     }
 
     @Override
     public String toString() {
         return "FlightMission{" +
-                "name=" + getName() +
+                "id=" + getId() +
+                ", name=" + getName() +
+                ", distance=" + distance +
                 ", from=" + from +
                 ", to=" + to +
-                ", startDate=" + startDate +
+                ", startDate=" + startDate.format(DateTimeFormatter.ofPattern(
+                ApplicationProperties.getInstance().getDateTimeFormat())) +
+                ", endDate=" + endDate.format(DateTimeFormatter.ofPattern(
+                ApplicationProperties.getInstance().getDateTimeFormat())) +
+                ", assignedSpaceship=" + assignedSpaceship +
+                ", assignedCrew=" + assignedCrew +
+                ", missionStatus=" + missionStatus +
                 '}';
     }
 

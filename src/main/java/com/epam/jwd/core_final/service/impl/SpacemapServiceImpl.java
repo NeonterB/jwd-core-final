@@ -7,16 +7,31 @@ import com.epam.jwd.core_final.exception.EntityNotFoundException;
 import com.epam.jwd.core_final.service.SpacemapService;
 
 import java.util.Collection;
+import java.util.Optional;
 
+@SuppressWarnings("unchecked")
 public class SpacemapServiceImpl implements SpacemapService {
-    private static SpacemapServiceImpl instance = new SpacemapServiceImpl();
+    private static final SpacemapServiceImpl instance = new SpacemapServiceImpl();
 
     private SpacemapServiceImpl(){}
 
     public static SpacemapServiceImpl getInstance() {
         return instance;
     }
-    @SuppressWarnings("unchecked")
+
+    @Override
+    public Collection<Planet> findAll() {
+        return (Collection<Planet>) Main.getApplicationMenu().getApplicationContext().retrieveBaseEntityList(Planet.class);
+    }
+
+    @Override
+    public Optional<Planet> findPlanetById(Long id) {
+        return ((Collection<Planet>) Main.getApplicationMenu().getApplicationContext().retrieveBaseEntityList(Planet.class))
+                .stream()
+                .filter(planet -> planet.getId().equals(id))
+                .findFirst();
+    }
+
     @Override
     public Planet getRandomPlanet() throws EntityNotFoundException {
         ApplicationContext context = Main.getApplicationMenu().getApplicationContext();

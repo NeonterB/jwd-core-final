@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Map;
@@ -28,7 +29,7 @@ class FlightMissionTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    void testRun() throws EntityExistsException, EntityNotFoundException, EntityOccupiedException, InterruptedException {
+    void testRun() throws EntityExistsException, EntityNotFoundException, EntityOccupiedException, InterruptedException, IOException {
         Collection<CrewMember> crew = CrewServiceImpl.getInstance().findAllCrewMembers();
         Map<Role, Short> spaceshipCrew = new TreeMap<>();
         spaceshipCrew.put(Role.COMMANDER, (short) 2);
