@@ -54,7 +54,7 @@ class EntityRepositoryImplTest {
             sizeAfter = EntityRepositoryImpl.getInstance().getAll(Spaceship.class).size();
             assertEquals(sizeAfter, sizeBefore + 1);
 
-        } catch (IOException | EntityExistsException e) {
+        } catch (IOException e) {
             logger.error(e.getMessage());
         }
     }

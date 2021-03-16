@@ -29,7 +29,7 @@ public class NassaContext implements ApplicationContext {
     private Collection<Planet> planetMap;
     private Collection<FlightMission> missions;
 
-    private LocalDateTime lastUpdate;
+    private LocalDateTime lastUpdate = LocalDateTime.now();
 
     public Boolean getCanAccessCrewCache() {
         return canAccessCrewCache;
