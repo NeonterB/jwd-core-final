@@ -66,23 +66,23 @@ public class EntityRepositoryImpl implements EntityRepository {
                 .orElseThrow(() -> new UnknownEntityException(entityClass.getSimpleName()));
     }
 
-    public <T extends BaseEntity> LocalDateTime getLastModifiedTime(Class<T> tClass) throws IOException, IllegalAccessException {
-        URL path = null;
-        if (tClass.equals(CrewMember.class)) {
-            path = getClass().getClassLoader().getResource(ApplicationProperties.getInstance().getCrewFileDir());
-        } else if (tClass.equals(Spaceship.class)) {
-            path = getClass().getClassLoader().getResource(ApplicationProperties.getInstance().getSpaceshipFileDir());
-        } else throw new IllegalAccessException(tClass.getSimpleName() + " is not for modifying");
-        File file = null;
-        try {
-            assert path != null;
-            file = new File(path.toURI());
-        } catch (URISyntaxException e) {
-            logger.error(e.getMessage());
-        }
-        BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-        return LocalDateTime.ofInstant(attr.lastModifiedTime().toInstant(), ZoneId.systemDefault());
-    }
+//    public <T extends BaseEntity> LocalDateTime getLastModifiedTime(Class<T> tClass) throws IOException, IllegalAccessException {
+//        URL path = null;
+//        if (tClass.equals(CrewMember.class)) {
+//            path = getClass().getClassLoader().getResource(ApplicationProperties.getInstance().getCrewFileDir());
+//        } else if (tClass.equals(Spaceship.class)) {
+//            path = getClass().getClassLoader().getResource(ApplicationProperties.getInstance().getSpaceshipFileDir());
+//        } else throw new IllegalAccessException(tClass.getSimpleName() + " is not for modifying");
+//        File file = null;
+//        try {
+//            assert path != null;
+//            file = new File(path.toURI());
+//        } catch (URISyntaxException e) {
+//            logger.error(e.getMessage());
+//        }
+//        BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+//        return LocalDateTime.ofInstant(attr.lastModifiedTime().toInstant(), ZoneId.systemDefault());
+//    }
 
     @Override
     public <T extends BaseEntity> Collection<T> getAll(Class<T> tClass) throws IOException {

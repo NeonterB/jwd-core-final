@@ -117,11 +117,11 @@ public class NassaContext implements ApplicationContext {
     @SuppressWarnings("unchecked")
     @Override
     public <T extends BaseEntity> void updateCache(Class<T> tClass) {
-        try {
-            if (lastUpdate.isAfter(EntityRepositoryImpl.getInstance().getLastModifiedTime(tClass))) return;
-        } catch (IOException | IllegalAccessException e) {
-            logger.error(e.getMessage());
-        }
+//        try {
+//            if (lastUpdate.isAfter(EntityRepositoryImpl.getInstance().getLastModifiedTime(tClass))) return;
+//        } catch (IOException | IllegalAccessException e) {
+//            logger.error(e.getMessage());
+//        }
         Collection<EntityWrap<T>> cache = (Collection<EntityWrap<T>>) retrieveBaseEntityList(tClass);
         try {
             cache.removeIf(wrap -> !wrap.isValid());
