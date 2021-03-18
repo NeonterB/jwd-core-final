@@ -1,5 +1,6 @@
 package com.epam.jwd.core_final.service;
 
+import com.epam.jwd.core_final.context.ApplicationContext;
 import com.epam.jwd.core_final.context.MethodInfo;
 import com.epam.jwd.core_final.criteria.Criteria;
 import com.epam.jwd.core_final.domain.CrewMember;
@@ -14,9 +15,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MissionService {
+    ApplicationContext getContext();
 
     @MethodInfo(menuPosition = 1, description = "Find all missions")
-    Collection<FlightMission> findAllMissions() throws EntityNotFoundException;
+    Collection<FlightMission> findAllMissions();
 
     @MethodInfo(menuPosition = 2, description = "Find all missions by criteria")
     Collection<FlightMission> findAllMissionsByCriteria(Criteria<FlightMission> criteria);

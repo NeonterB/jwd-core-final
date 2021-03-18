@@ -12,15 +12,19 @@ import com.epam.jwd.core_final.service.SpaceshipService;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @SuppressWarnings({"unchecked", "DuplicatedCode"})
 public class SpaceshipServiceImpl implements SpaceshipService {
-    private static SpaceshipService instance = SpaceshipServiceProxy.newInstance(new SpaceshipServiceImpl());
+    private static final SpaceshipService instance = SpaceshipServiceProxy.newInstance(new SpaceshipServiceImpl(
+            Main.getApplicationMenu().getApplicationContext()
+    ));
 
-    private SpaceshipServiceImpl() {
+    private final ApplicationContext context;
+
+    private SpaceshipServiceImpl(ApplicationContext context) {
+        this.context = context;
     }
 
     public static SpaceshipService getInstance() {
@@ -28,8 +32,12 @@ public class SpaceshipServiceImpl implements SpaceshipService {
     }
 
     @Override
+    public ApplicationContext getContext() {
+        return context;
+    }
+
+    @Override
     public Collection<Spaceship> findAllSpaceships() {
-        ApplicationContext context = Main.getApplicationMenu().getApplicationContext();
         context.updateCache(Spaceship.class);
         return ((Collection<EntityWrap<Spaceship>>) context.retrieveBaseEntityList(Spaceship.class)).stream()
                 .filter(EntityWrap::isValid)
@@ -38,9 +46,7 @@ public class SpaceshipServiceImpl implements SpaceshipService {
     }
 
     @Override
-    public Collection<Spaceship> findAllSpaceshipsByCriteria(Criteria<Spaceship> criteria){
-        ApplicationContext context = Main.getApplicationMenu().getApplicationContext();
-
+    public Collection<Spaceship> findAllSpaceshipsByCriteria(Criteria<Spaceship> criteria) {
         Collection<EntityWrap<Spaceship>> cache = (Collection<EntityWrap<Spaceship>>) context.retrieveBaseEntityList(Spaceship.class);
         Collection<Spaceship> foundSpaceships = cache.stream()
                 .filter((wrap) -> wrap.isValid() && criteria.meetsCriteria(wrap.getEntity()))
@@ -60,14 +66,12 @@ public class SpaceshipServiceImpl implements SpaceshipService {
     }
 
     @Override
-    public Optional<Spaceship> findSpaceshipByCriteria(Criteria<Spaceship> criteria){
+    public Optional<Spaceship> findSpaceshipByCriteria(Criteria<Spaceship> criteria) {
         return findAllSpaceshipsByCriteria(criteria).stream().findAny();
     }
 
     @Override
     public Spaceship createSpaceship(Spaceship spaceship) throws EntityExistsException, IOException {
-        ApplicationContext context = Main.getApplicationMenu().getApplicationContext();
-
         Collection<EntityWrap<Spaceship>> cache = (Collection<EntityWrap<Spaceship>>) context.retrieveBaseEntityList(Spaceship.class);
         if (cache.contains(new EntityWrap<>(spaceship)))
             throw new EntityExistsException(spaceship);
@@ -82,7 +86,6 @@ public class SpaceshipServiceImpl implements SpaceshipService {
 
     @Override
     public void deleteSpaceship(Spaceship spaceship) throws EntityNotFoundException, IOException {
-        ApplicationContext context = Main.getApplicationMenu().getApplicationContext();
         Collection<EntityWrap<Spaceship>> cache = (Collection<EntityWrap<Spaceship>>) context.retrieveBaseEntityList(Spaceship.class);
         cache.stream().filter(e -> e.getEntity().equals(spaceship)).forEach(wrap -> wrap.setValid(false));
 

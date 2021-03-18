@@ -1,12 +1,11 @@
 package com.epam.jwd.core_final.domain;
 
-import com.epam.jwd.core_final.Main;
+import com.epam.jwd.core_final.context.impl.NassaContext;
 import com.epam.jwd.core_final.exception.EntityExistsException;
-import com.epam.jwd.core_final.exception.EntityNotFoundException;
 import com.epam.jwd.core_final.exception.EntityOccupiedException;
+import com.epam.jwd.core_final.exception.InvalidStateException;
 import com.epam.jwd.core_final.service.impl.CrewServiceImpl;
 import com.epam.jwd.core_final.service.impl.MissionServiceImpl;
-import com.epam.jwd.core_final.service.impl.SpacemapServiceImpl;
 import com.epam.jwd.core_final.service.impl.SpaceshipServiceImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -21,15 +20,20 @@ import java.util.TreeMap;
 
 class FlightMissionTest {
     private static final Logger logger = LoggerFactory.getLogger(FlightMissionTest.class);
+    private static final NassaContext context = new NassaContext();
 
     @BeforeAll
     static void setUp() {
-        Main.main();
+        try {
+            context.init();
+        } catch (InvalidStateException e) {
+            logger.error(e.getMessage());
+        }
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    void testRun() throws EntityExistsException, EntityNotFoundException, EntityOccupiedException, InterruptedException, IOException {
+    void testRun() throws EntityExistsException, EntityOccupiedException, InterruptedException, IOException {
         Collection<CrewMember> crew = CrewServiceImpl.getInstance().findAllCrewMembers();
         Map<Role, Short> spaceshipCrew = new TreeMap<>();
         spaceshipCrew.put(Role.COMMANDER, (short) 2);
@@ -39,7 +43,7 @@ class FlightMissionTest {
                 new SpaceshipFactory().create("testShip", 100000L, spaceshipCrew)
         );
         Planet from = new PlanetFactory().create("Earth", 0, 0);
-        Planet to =  new PlanetFactory().create("Mars", 10, 10);
+        Planet to = new PlanetFactory().create("Mars", 10, 10);
         FlightMission mission = MissionServiceImpl.getInstance().createMission(
                 new FlightMissionFactory().create("testMission", LocalDateTime.now().plusSeconds(15), from, to)
         );
@@ -48,8 +52,7 @@ class FlightMissionTest {
             MissionServiceImpl.getInstance().assignCrewMemberOnMission(mission, crewMember);
         }
         boolean canEnd = false;
-        Collection<FlightMission> missions = (Collection<FlightMission>) Main.getApplicationMenu().getApplicationContext()
-                .retrieveBaseEntityList(FlightMission.class);
+        Collection<FlightMission> missions = (Collection<FlightMission>) context.retrieveBaseEntityList(FlightMission.class);
         while (!canEnd) {
             long planned = missions.stream().filter(m -> m.getMissionStatus().equals(MissionStatus.PLANNED)).count();
             long ready = missions.stream().filter(m -> m.getMissionStatus().equals(MissionStatus.READY)).count();

@@ -24,10 +24,6 @@ public class Main {
                  command = applicationMenu.handleUserInput()) {
                 try {
                     command.execute();
-                } catch (IOException e) {
-                    logger.error(e.getMessage());
-                    System.out.println(e.getMessage());
-                    break;
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     System.out.println(e.getMessage());

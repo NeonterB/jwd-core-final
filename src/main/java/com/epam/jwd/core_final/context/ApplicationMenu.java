@@ -7,6 +7,7 @@ import com.epam.jwd.core_final.criteria.SpaceshipCriteria;
 import com.epam.jwd.core_final.domain.*;
 import com.epam.jwd.core_final.exception.EntityNotFoundException;
 import com.epam.jwd.core_final.exception.InvalidStateException;
+import com.epam.jwd.core_final.exception.UnknownEntityException;
 import com.epam.jwd.core_final.service.CrewService;
 import com.epam.jwd.core_final.service.MissionService;
 import com.epam.jwd.core_final.service.SpacemapService;
@@ -47,109 +48,124 @@ public interface ApplicationMenu {
                 .collect(Collectors.toList()));
     }};
 
+    Scanner scanner = new Scanner(System.in);
+
     ApplicationContext getApplicationContext();
 
     default void printParentMenu() {
-        System.out.println();
+        System.out.println("--------------------------------------");
         System.out.println("Available services:");
         Set<Class<?>> services = operations.keySet();
         int i = 1;
         for (Class<?> service : services) {
             System.out.println("\t" + (i++) + " - " + service.getSimpleName());
         }
+        System.out.println("\t" + (services.size() + 1) + " - Exit");
+        System.out.println("--------------------------------------");
+        System.out.print("Your service: ");
     }
 
     default void printOperationMenu(Class<?> service) {
         List<Method> options = operations.get(service);
         if (options == null) return;
-        System.out.println();
+        System.out.println("--------------------------------------");
         System.out.println(service.getSimpleName() + " operations:");
         for (int i = 0; i < options.size(); i++) {
             System.out.println("\t" + (i + 1) + " - " + options.get(i).getAnnotation(MethodInfo.class).description());
         }
         System.out.println("\t" + (options.size() + 1) + " - Back");
+        System.out.println("--------------------------------------");
+        System.out.print("Your operation: ");
     }
 
     default Command handleUserInput() throws InvalidStateException, IOException {
-        Scanner scanner = new Scanner(System.in);
         printParentMenu();
-        int serviceNum = scanner.nextInt() - 1;
-        Command command;
-
+        int serviceNum;
+        Command command = null;
+        while (true) {
+            try {
+                serviceNum = scanner.nextInt();
+                scanner.nextLine();
+                while (serviceNum > 5 || serviceNum < 1) {
+                    System.out.println("There is no service with number " + serviceNum + ". Try again.");
+                    System.out.print("Your service: ");
+                    serviceNum = scanner.nextInt();
+                    scanner.nextLine();
+                }
+                break;
+            } catch (InputMismatchException e) {
+                scanner.nextLine();
+                System.out.println("Invalid input. Enter number of service.");
+                System.out.print("Your service: ");
+            }
+        }
         switch (serviceNum) {
             //CrewService
-            case 0: {
+            case 1: {
                 printOperationMenu(CrewService.class);
-                int operationNum = scanner.nextInt();
-                scanner.nextLine();
-                command = handleCrewService(operationNum, scanner);
+                command = handleCrewService();
                 break;
             }
             //SpaceshipService
-            case 1: {
+            case 2: {
                 printOperationMenu(SpaceshipService.class);
-                int operationNum = scanner.nextInt();
-                scanner.nextLine();
-                command = handleSpaceshipService(operationNum, scanner);
+                command = handleSpaceshipService();
                 break;
             }
             //SpacemapService
-            case 2: {
-                printOperationMenu(SpacemapService.class);
-                int operationNum = scanner.nextInt();
-                scanner.nextLine();
-                command = handleSpacemapService(operationNum, scanner);
-                break;
-            }
             case 3: {
-                printOperationMenu(MissionService.class);
-                int operationNum = scanner.nextInt();
-                scanner.nextLine();
-                command = handleMissionService(operationNum, scanner);
+                printOperationMenu(SpacemapService.class);
+                command = handleSpacemapService();
                 break;
             }
-            default: {
-                return null;
+            //MissionService
+            case 4: {
+                printOperationMenu(MissionService.class);
+                command = handleMissionService();
+                break;
             }
         }
         return command;
     }
 
-    default Command handleCrewService(int operation, Scanner scanner) {
+    default Command handleCrewService() {
         CrewService service = CrewServiceImpl.getInstance();
-        Command command;
-        switch (operation) {
+        Command command = null;
+        switch (parseOperation(1, 6)) {
             //findAllCrewMembers
             case 1: {
-                command = () -> System.out.println(StringUtils.join(service.findAllCrewMembers(), "\n"));
+                command = () -> {
+                    Collection<CrewMember> crewMembers = service.findAllCrewMembers();
+                    if (crewMembers.isEmpty()){
+                        System.out.println("There are no crew members yet");
+                        return;
+                    }
+                    System.out.println(StringUtils.join(crewMembers, "\n"));
+                };
                 break;
             }
             //findAllCrewMembersByCriteria
             case 2: {
-                System.out.println("Criteria template - id=..;name=..;rank=..;role=..;isReady=..");
-                System.out.print("Your criteria: ");
+                Criteria<CrewMember> finalCriteria = parseCrewMemberCriteria();
                 command = () -> {
-                    Criteria<CrewMember> criteria = CrewMemberCriteria.parseCriteria(scanner.nextLine());
-                    Collection<CrewMember> foundMembers = service.findAllCrewMembersByCriteria(criteria);
+                    Collection<CrewMember> foundMembers = service.findAllCrewMembersByCriteria(finalCriteria);
                     if (!foundMembers.isEmpty()) {
                         System.out.println(StringUtils.join(foundMembers, "\n"));
                     } else {
-                        System.out.println("No members found by given criteria: " + criteria);
+                        System.out.println("No members found by given criteria: " + finalCriteria);
                     }
                 };
                 break;
             }
             //findCrewMemberByCriteria
             case 3: {
-                System.out.println("Criteria template - id=..;name=..;rank=..;role=..;isReady=..");
-                System.out.print("Your criteria: ");
+                Criteria<CrewMember> finalCriteria = parseCrewMemberCriteria();
                 command = () -> {
-                    Criteria<CrewMember> criteria = CrewMemberCriteria.parseCriteria(scanner.nextLine());
-                    Optional<CrewMember> foundMember = service.findCrewMemberByCriteria(criteria);
+                    Optional<CrewMember> foundMember = service.findCrewMemberByCriteria(finalCriteria);
                     if (foundMember.isPresent()) {
                         System.out.println(foundMember.get());
                     } else {
-                        System.out.println("No member found by given criteria: " + criteria);
+                        System.out.println("No member found by given criteria: " + finalCriteria);
                     }
                 };
                 break;
@@ -158,47 +174,60 @@ public interface ApplicationMenu {
             case 4: {
                 System.out.println("Crew member template - role,name,rank");
                 System.out.print("Your crew member: ");
-                command = () -> {
-                    CrewMember member = new CrewMemberFactory().create(scanner.nextLine());
-                    System.out.println(service.createCrewMember(member) + " created successfully");
-                };
+                CrewMemberFactory factory = new CrewMemberFactory();
+                CrewMember member;
+                while (true) {
+                    try {
+                        member = factory.create(scanner.nextLine());
+                        break;
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        System.out.print("Your crew member: ");
+                    }
+                }
+                CrewMember finalMember = member;
+                command = () -> System.out.println(service.createCrewMember(finalMember) + " created successfully");
                 break;
             }
             //deleteCrewMember
             case 5: {
-                System.out.println("Enter crew member id: ");
+                Long finalId = parseId("crew member");
                 command = () -> {
-                    Long id = scanner.nextLong();
                     service.deleteCrewMember(
-                            service.findCrewMemberByCriteria(CrewMemberCriteria.newBuilder().setId(id).build())
-                                    .orElseThrow(() -> new EntityNotFoundException("CrewMember", id))
+                            service.findCrewMemberByCriteria(CrewMemberCriteria.newBuilder().setId(finalId).build())
+                                    .orElseThrow(() -> new EntityNotFoundException("CrewMember", finalId))
                     );
                     System.out.println("Deleted successfully");
                 };
                 break;
             }
             //Exit
-            default: {
+            case 6: {
                 return this::handleUserInput;
             }
         }
         return command;
     }
 
-    default Command handleSpaceshipService(int operation, Scanner scanner) {
+    default Command handleSpaceshipService() {
         SpaceshipService service = SpaceshipServiceImpl.getInstance();
-        Command command;
-        switch (operation) {
+        Command command = null;
+        switch (parseOperation(1, 5)) {
             //findAllSpaceships
             case 1: {
-                command = () -> System.out.println(StringUtils.join(service.findAllSpaceships(), "\n"));
+                command = () -> {
+                    Collection<Spaceship> spaceships = service.findAllSpaceships();
+                    if(spaceships.isEmpty()) {
+                        System.out.println("There are no spaceships yet");
+                        return;
+                    }
+                    System.out.println(StringUtils.join(spaceships, "\n"));
+                };
                 break;
             }
             //findAllSpaceshipsByCriteria
             case 2: {
-                System.out.println("Criteria template - id=..;name=..;crew={roleId:count,..};distance=..;isReady=..");
-                System.out.print("Your criteria: ");
-                Criteria<Spaceship> criteria = SpaceshipCriteria.parseCriteria(scanner.nextLine());
+                Criteria<Spaceship> criteria = parseSpaceshipCriteria();
                 command = () -> {
                     Collection<Spaceship> foundSpaceships = service.findAllSpaceshipsByCriteria(criteria);
                     if (!foundSpaceships.isEmpty()) {
@@ -211,9 +240,7 @@ public interface ApplicationMenu {
             }
             //findSpaceshipByCriteria
             case 3: {
-                System.out.println("Criteria template - id=..;name=..;crew={roleId:count,..};distance=..;isReady=..");
-                System.out.print("Your criteria: ");
-                Criteria<Spaceship> criteria = SpaceshipCriteria.parseCriteria(scanner.nextLine());
+                Criteria<Spaceship> criteria = parseSpaceshipCriteria();
                 command = () -> {
                     Optional<Spaceship> foundSpaceship = service.findSpaceshipByCriteria(criteria);
                     if (foundSpaceship.isPresent()) {
@@ -228,38 +255,55 @@ public interface ApplicationMenu {
             case 4: {
                 System.out.println("Spaceship template - name;distance;crew {roleId:count,..}");
                 System.out.print("Your spaceship: ");
-                Spaceship spaceship = new SpaceshipFactory().create(scanner.nextLine());
-                command = () -> System.out.println(service.createSpaceship(spaceship) + " created successfully");
+                SpaceshipFactory factory = new SpaceshipFactory();
+                Spaceship spaceship;
+                while (true) {
+                    try {
+                        spaceship = factory.create(scanner.nextLine());
+                        break;
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        System.out.print("Your spaceship: ");
+                    }
+                }
+                Spaceship finalShip = spaceship;
+                command = () -> System.out.println(service.createSpaceship(finalShip) + " created successfully");
                 break;
             }
             //deleteSpaceship
             case 5: {
-                System.out.println("Enter spaceship id: ");
-                Long id = scanner.nextLong();
+                long finalId = parseId("spaceship");
                 command = () -> {
                     service.deleteSpaceship(
-                            service.findSpaceshipByCriteria(SpaceshipCriteria.newBuilder().setId(id).build())
-                                    .orElseThrow(() -> new EntityNotFoundException("Spaceship", id))
+                            service.findSpaceshipByCriteria(SpaceshipCriteria.newBuilder().setId(finalId).build())
+                                    .orElseThrow(() -> new EntityNotFoundException("Spaceship", finalId))
                     );
                     System.out.println("Deleted successfully");
                 };
                 break;
             }
             //Exit
-            default: {
+            case 6: {
                 return this::handleUserInput;
             }
         }
         return command;
     }
 
-    default Command handleSpacemapService(int operation, Scanner scanner) {
+    default Command handleSpacemapService() {
         SpacemapService service = SpacemapServiceImpl.getInstance();
-        Command command;
-        switch (operation) {
+        Command command = null;
+        switch (parseOperation(1, 4)) {
             //findAllPlanets
             case 1: {
-                command = () -> System.out.println(StringUtils.join(service.findAll(), "\n"));
+                command = () -> {
+                    Collection<Planet> planets = service.findAll();
+                    if (planets.isEmpty()) {
+                        System.out.println("There are no planets");
+                        return;
+                    }
+                    System.out.println(StringUtils.join(planets, "\n"));
+                };
                 break;
             }
             //getRandomPlanet
@@ -269,9 +313,8 @@ public interface ApplicationMenu {
             }
             //getDistanceBetweenPlanets
             case 3: {
-                System.out.print("Enter ids of planets: ");
-                Long id1 = scanner.nextLong();
-                Long id2 = scanner.nextLong();
+                Long id1 = parseId("first planet");
+                Long id2 = parseId("second planet");
                 command = () -> {
                     Optional<Planet> from = service.findPlanetById(id1);
                     if (!from.isPresent()) {
@@ -288,14 +331,14 @@ public interface ApplicationMenu {
                 break;
             }
             //Exit
-            default: {
+            case 4: {
                 return this::handleUserInput;
             }
         }
         return command;
     }
 
-    default Command handleMissionService(int operation, Scanner scanner) throws InvalidStateException, IOException {
+    default Command handleMissionService() throws InvalidStateException, IOException {
         MissionService service = MissionServiceImpl.getInstance();
         ApplicationProperties properties = ApplicationProperties.getInstance();
 
@@ -308,12 +351,16 @@ public interface ApplicationMenu {
             throw new InvalidStateException("output file cannot be created");
 
         ObjectMapper mapper = new ObjectMapper();
-        Command command;
-        switch (operation) {
+        Command command = null;
+        switch (parseOperation(1, 7)) {
             //findAllMissions
             case 1: {
                 command = () -> {
                     Collection<FlightMission> missions = service.findAllMissions();
+                    if (missions.isEmpty()) {
+                        System.out.println("There are no missions yet");
+                        return;
+                    }
                     mapper.writeValue(missionOutput, missions);
                     System.out.println(StringUtils.join(missions, "\n"));
                 };
@@ -321,13 +368,9 @@ public interface ApplicationMenu {
             }
             //findAllMissionsByCriteria
             case 2: {
+                Criteria<FlightMission> criteria = parseMissionCriteria();
                 command = () -> {
-                    System.out.println("Criteria template - id=..;name=..;startDate=..;endDate=..;" +
-                            "distance=..;spaceship=(id);crew=id1,id2,..;status=..;from=(id);to=(id)");
-                    System.out.print("Your criteria: ");
-                    FlightMissionCriteria criteria = FlightMissionCriteria.parseCriteria(scanner.nextLine());
                     Collection<FlightMission> missions = service.findAllMissionsByCriteria(criteria);
-
                     if (!missions.isEmpty()) {
                         mapper.writeValue(missionOutput, missions);
                         System.out.println(StringUtils.join(missions, "\n"));
@@ -339,11 +382,8 @@ public interface ApplicationMenu {
             }
             //findMissionByCriteria
             case 3: {
+                Criteria<FlightMission> criteria = parseMissionCriteria();
                 command = () -> {
-                    System.out.println("Criteria template - id=..;name=..;startDate=..;endDate=..;" +
-                            "distance=..;spaceship=(id);crew=id1,id2,..;status=..;from=(id);to=(id)");
-                    System.out.print("Your criteria: ");
-                    FlightMissionCriteria criteria = FlightMissionCriteria.parseCriteria(scanner.nextLine());
                     Optional<FlightMission> mission = service.findMissionByCriteria(criteria);
                     if (mission.isPresent()) {
                         mapper.writeValue(missionOutput, mission);
@@ -356,15 +396,13 @@ public interface ApplicationMenu {
             }
             //assignCrewMember
             case 4: {
+                long missionId = parseId("mission");
+                long memberId = parseId("crew member");
                 command = () -> {
-                    System.out.print("Enter mission and crew member ids: ");
-
-                    Long missionId = scanner.nextLong();
                     FlightMission mission = service.findMissionByCriteria(
                             FlightMissionCriteria.newBuilder().setId(missionId).build()
                     ).orElseThrow(() -> new EntityNotFoundException("Flight Mission", missionId));
 
-                    Long memberId = scanner.nextLong();
                     CrewMember member = CrewServiceImpl.getInstance().findCrewMemberByCriteria(
                             CrewMemberCriteria.newBuilder().setId(memberId).build()
                     ).orElseThrow(() -> new EntityNotFoundException("Crew Member", missionId));
@@ -375,15 +413,13 @@ public interface ApplicationMenu {
             }
             //assignSpaceship
             case 5: {
+                long missionId = parseId("mission");
+                long shipId = parseId("spaceship");
                 command = () -> {
-                    System.out.print("Enter mission and spaceship ids: ");
-
-                    Long missionId = scanner.nextLong();
                     FlightMission mission = service.findMissionByCriteria(
                             FlightMissionCriteria.newBuilder().setId(missionId).build()
                     ).orElseThrow(() -> new EntityNotFoundException("Flight Mission", missionId));
 
-                    Long shipId = scanner.nextLong();
                     Spaceship ship = SpaceshipServiceImpl.getInstance().findSpaceshipByCriteria(
                             SpaceshipCriteria.newBuilder().setId(shipId).build()
                     ).orElseThrow(() -> new EntityNotFoundException("Spaceship", shipId));
@@ -396,18 +432,116 @@ public interface ApplicationMenu {
             case 6: {
                 System.out.println("Mission template - name,startDate,fromId,toId");
                 System.out.print("Your mission: ");
-                command = () -> {
-                    FlightMission mission = new FlightMissionFactory().create(scanner.nextLine());
-                    System.out.println(service.createMission(mission) + " created successfully");
-                };
+                FlightMissionFactory factory = new FlightMissionFactory();
+                FlightMission mission;
+                while (true) {
+                    try {
+                        mission = factory.create(scanner.nextLine());
+                        break;
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        System.out.print("Your mission: ");
+                    }
+                }
+                FlightMission finalMission = mission;
+                command = () -> System.out.println(service.createMission(finalMission) + " created successfully");
                 break;
             }
             //Exit
-            default: {
+            case 7: {
                 return this::handleUserInput;
             }
         }
         return command;
+    }
+
+    default int parseOperation(int leftBound, int rightBound) {
+        int operation;
+        while (true) {
+            try {
+                operation = scanner.nextInt();
+                scanner.nextLine();
+                while (operation < leftBound || operation > rightBound) {
+                    System.out.println("There is no operation with number " + operation + ". Try again.");
+                    System.out.print("Your operation: ");
+                    operation = scanner.nextInt();
+                    scanner.nextLine();
+                }
+                break;
+            } catch (InputMismatchException e) {
+                scanner.nextLine();
+                System.out.println("Invalid input. Enter number of operation.");
+                System.out.print("Your operation: ");
+            }
+        }
+        return operation;
+    }
+
+    default Criteria<CrewMember> parseCrewMemberCriteria(){
+        System.out.println("Criteria template - id=..;name=..;rank=..;role=..;isReady=..");
+        System.out.print("Your criteria: ");
+        Criteria<CrewMember> criteria;
+        while (true) {
+            try {
+                criteria = CrewMemberCriteria.parseCriteria(scanner.nextLine());
+                break;
+            } catch (IllegalArgumentException | UnknownEntityException e) {
+                System.out.println(e.getMessage());
+                System.out.print("Your criteria: ");
+            }
+        }
+        return criteria;
+    }
+
+    default Criteria<Spaceship> parseSpaceshipCriteria(){
+        System.out.println("Criteria template - id=..;name=..;crew={roleId:count,..};distance=..;isReady=..");
+        System.out.print("Your criteria: ");
+        Criteria<Spaceship> criteria;
+        while (true) {
+            try {
+                criteria = SpaceshipCriteria.parseCriteria(scanner.nextLine());
+                break;
+            } catch (IllegalArgumentException | UnknownEntityException e) {
+                System.out.println(e.getMessage());
+                System.out.print("Your criteria: ");
+            }
+        }
+        return criteria;
+    }
+
+    default Criteria<FlightMission> parseMissionCriteria(){
+        System.out.println("Criteria template - id=..;name=..;startDate=..;endDate=..;" +
+                "distance=..;spaceship=(id);crew=id1,id2,..;status=..;from=(id);to=(id)");
+        System.out.print("Your criteria: ");
+        Criteria<FlightMission> criteria;
+        while (true) {
+            try {
+                criteria = FlightMissionCriteria.parseCriteria(scanner.nextLine());
+                break;
+            } catch (IllegalArgumentException | EntityNotFoundException e) {
+                System.out.println(e.getMessage());
+                System.out.print("Your criteria: ");
+            }
+        }
+        return criteria;
+    }
+
+    default long parseId(String msg){
+        String str = "Enter " + msg + " id: ";
+        System.out.print(str);
+        long id;
+        while (true) {
+            try {
+                id = scanner.nextLong();
+                scanner.nextLine();
+                break;
+            } catch (InputMismatchException e) {
+                scanner.nextLine();
+                System.out.println("Invalid input. Enter id(long).");
+                System.out.print(str);
+            }
+        }
+        return id;
     }
 }
 

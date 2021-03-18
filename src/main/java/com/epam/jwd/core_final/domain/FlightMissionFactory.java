@@ -5,6 +5,7 @@ import com.epam.jwd.core_final.service.impl.SpacemapServiceImpl;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class FlightMissionFactory implements EntityFactory<FlightMission> {
     /**
@@ -19,7 +20,8 @@ public class FlightMissionFactory implements EntityFactory<FlightMission> {
         return new FlightMission((String) args[0], (LocalDateTime) args[1], (Planet) args[2], (Planet) args[3]);
     }
 
-    public FlightMission create(String line) throws ClassCastException, IllegalArgumentException, EntityNotFoundException {
+    public FlightMission create(String line) throws ClassCastException, IllegalArgumentException,
+            EntityNotFoundException, DateTimeParseException {
         String[] args = line.split(",");
         if (args.length != 4) throw new IllegalArgumentException("FlightMission creation requires 4 arguments");
         long id1 = Long.parseLong(args[2]);

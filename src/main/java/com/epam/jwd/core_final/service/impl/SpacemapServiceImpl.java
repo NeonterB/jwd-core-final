@@ -11,9 +11,19 @@ import java.util.Optional;
 
 @SuppressWarnings("unchecked")
 public class SpacemapServiceImpl implements SpacemapService {
-    private static final SpacemapServiceImpl instance = new SpacemapServiceImpl();
+    private static final SpacemapServiceImpl instance = new SpacemapServiceImpl(
+            Main.getApplicationMenu().getApplicationContext()
+    );
+    private final ApplicationContext context;
 
-    private SpacemapServiceImpl(){}
+    private SpacemapServiceImpl(ApplicationContext context) {
+        this.context = context;
+    }
+
+    @Override
+    public ApplicationContext getContext() {
+        return context;
+    }
 
     public static SpacemapServiceImpl getInstance() {
         return instance;
@@ -21,12 +31,12 @@ public class SpacemapServiceImpl implements SpacemapService {
 
     @Override
     public Collection<Planet> findAll() {
-        return (Collection<Planet>) Main.getApplicationMenu().getApplicationContext().retrieveBaseEntityList(Planet.class);
+        return (Collection<Planet>) context.retrieveBaseEntityList(Planet.class);
     }
 
     @Override
     public Optional<Planet> findPlanetById(Long id) {
-        return ((Collection<Planet>) Main.getApplicationMenu().getApplicationContext().retrieveBaseEntityList(Planet.class))
+        return ((Collection<Planet>) context.retrieveBaseEntityList(Planet.class))
                 .stream()
                 .filter(planet -> planet.getId().equals(id))
                 .findFirst();
@@ -34,7 +44,6 @@ public class SpacemapServiceImpl implements SpacemapService {
 
     @Override
     public Planet getRandomPlanet() throws EntityNotFoundException {
-        ApplicationContext context = Main.getApplicationMenu().getApplicationContext();
         Collection<Planet> cache = (Collection<Planet>) context.retrieveBaseEntityList(Planet.class);
         if (cache.isEmpty()) context.updateCache(Planet.class);
         return cache.stream()

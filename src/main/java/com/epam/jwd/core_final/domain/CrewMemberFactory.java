@@ -1,5 +1,7 @@
 package com.epam.jwd.core_final.domain;
 
+import com.epam.jwd.core_final.exception.UnknownEntityException;
+
 // do the same for other entities
 public class CrewMemberFactory implements EntityFactory<CrewMember> {
 
@@ -15,7 +17,7 @@ public class CrewMemberFactory implements EntityFactory<CrewMember> {
         return new CrewMember((Role) args[0], (String) args[1], (Rank) args[2]);
     }
 
-    public CrewMember create(String line) throws IllegalArgumentException, ClassCastException {
+    public CrewMember create(String line) throws IllegalArgumentException, ClassCastException, UnknownEntityException {
         String[] args = line.split(",");
         if (args.length != 3) throw new IllegalArgumentException("CrewMember creation requires 3 arguments");
         return create(

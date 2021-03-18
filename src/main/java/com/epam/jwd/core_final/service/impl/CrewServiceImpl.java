@@ -11,16 +11,24 @@ import com.epam.jwd.core_final.repository.impl.EntityRepositoryImpl;
 import com.epam.jwd.core_final.service.CrewService;
 
 import java.io.IOException;
-import java.security.AccessControlException;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 public class CrewServiceImpl implements CrewService {
-    private static final CrewService instance = CrewServiceProxy.newInstance(new CrewServiceImpl());
+    private static final CrewService instance = CrewServiceProxy.newInstance(new CrewServiceImpl(
+            Main.getApplicationMenu().getApplicationContext()
+    ));
 
-    private CrewServiceImpl() {
+    public ApplicationContext getContext() {
+        return context;
+    }
+
+    private final ApplicationContext context;
+
+    private CrewServiceImpl(ApplicationContext context) {
+        this.context = context;
     }
 
     public static CrewService getInstance() {
@@ -29,7 +37,6 @@ public class CrewServiceImpl implements CrewService {
 
     @Override
     public Collection<CrewMember> findAllCrewMembers() {
-        ApplicationContext context = Main.getApplicationMenu().getApplicationContext();
         context.updateCache(CrewMember.class);
         return ((Collection<EntityWrap<CrewMember>>) context.retrieveBaseEntityList(CrewMember.class)).stream()
                 .filter(EntityWrap::isValid)
@@ -39,8 +46,6 @@ public class CrewServiceImpl implements CrewService {
 
     @Override
     public Collection<CrewMember> findAllCrewMembersByCriteria(Criteria<CrewMember> criteria) {
-        ApplicationContext context = Main.getApplicationMenu().getApplicationContext();
-
         Collection<EntityWrap<CrewMember>> cache = (Collection<EntityWrap<CrewMember>>) context.retrieveBaseEntityList(CrewMember.class);
         Collection<CrewMember> foundMembers = cache.stream()
                 .filter((wrap) -> wrap.isValid() && criteria.meetsCriteria(wrap.getEntity()))
@@ -64,10 +69,9 @@ public class CrewServiceImpl implements CrewService {
         return findAllCrewMembersByCriteria(criteria).stream().findAny();
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @Override
     public CrewMember createCrewMember(CrewMember crewMember) throws EntityExistsException, IOException {
-        ApplicationContext context = Main.getApplicationMenu().getApplicationContext();
-
         Collection<EntityWrap<CrewMember>> cache = (Collection<EntityWrap<CrewMember>>) context.retrieveBaseEntityList(CrewMember.class);
         if (cache.contains(new EntityWrap<>(crewMember)))
             throw new EntityExistsException(crewMember);
@@ -82,7 +86,6 @@ public class CrewServiceImpl implements CrewService {
 
     @Override
     public void deleteCrewMember(CrewMember crewMember) throws EntityNotFoundException, IOException {
-        ApplicationContext context = Main.getApplicationMenu().getApplicationContext();
         Collection<EntityWrap<CrewMember>> cache = (Collection<EntityWrap<CrewMember>>) context.retrieveBaseEntityList(CrewMember.class);
         cache.stream().filter(e -> e.getEntity().equals(crewMember)).forEach(wrap -> wrap.setValid(false));
 

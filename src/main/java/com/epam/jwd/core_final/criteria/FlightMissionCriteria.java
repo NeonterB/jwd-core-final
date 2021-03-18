@@ -2,6 +2,7 @@ package com.epam.jwd.core_final.criteria;
 
 import com.epam.jwd.core_final.domain.*;
 import com.epam.jwd.core_final.exception.EntityNotFoundException;
+import com.epam.jwd.core_final.exception.UnknownEntityException;
 import com.epam.jwd.core_final.service.impl.CrewServiceImpl;
 import com.epam.jwd.core_final.service.impl.SpacemapServiceImpl;
 import com.epam.jwd.core_final.service.impl.SpaceshipServiceImpl;
@@ -47,7 +48,7 @@ public class FlightMissionCriteria extends Criteria<FlightMission> {
         return new FlightMissionCriteria().new FlightMissionCriteriaBuilder();
     }
 
-    public static FlightMissionCriteria parseCriteria(String line) throws EntityNotFoundException {
+    public static FlightMissionCriteria parseCriteria(String line) throws IllegalArgumentException, EntityNotFoundException {
         FlightMissionCriteriaBuilder criteriaBuilder = newBuilder();
         ApplicationProperties properties = ApplicationProperties.getInstance();
         String[] args = line.split(";");
@@ -77,9 +78,10 @@ public class FlightMissionCriteria extends Criteria<FlightMission> {
                                     Long memberId = Long.parseLong(idStr);
                                     return CrewServiceImpl.getInstance().findCrewMemberByCriteria(
                                             CrewMemberCriteria.newBuilder().setId(memberId).build()
-                                    ).get();
+                                    ).orElse(null);
                                 }
                         ).collect(Collectors.toList());
+                if (crew.contains(null)) throw new UnknownEntityException("Crew member");
                 criteriaBuilder = criteriaBuilder.setAssignedCrew(crew);
             } else if (pair[0].equalsIgnoreCase("status")) {
                 criteriaBuilder = criteriaBuilder.setMissionStatus(MissionStatus.valueOf(pair[1].toUpperCase()));
@@ -101,6 +103,8 @@ public class FlightMissionCriteria extends Criteria<FlightMission> {
                 criteriaBuilder = (FlightMissionCriteriaBuilder) criteriaBuilder.setName(pair[1]);
             } else if (pair[0].equalsIgnoreCase("id")) {
                 criteriaBuilder = (FlightMissionCriteriaBuilder) criteriaBuilder.setId(Long.parseLong(pair[1]));
+            } else{
+                throw new IllegalArgumentException("Unknown field - " + pair[0]);
             }
         }
         return criteriaBuilder.build();

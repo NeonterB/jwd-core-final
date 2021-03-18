@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 public class SpaceshipServiceProxy implements InvocationHandler {
-    private SpaceshipService service;
+    private final SpaceshipService service;
 
     private SpaceshipServiceProxy(SpaceshipService service) {
         this.service = service;
@@ -20,7 +20,7 @@ public class SpaceshipServiceProxy implements InvocationHandler {
             Object proxy, Method m, Object[] args)
             throws Throwable {
         Object result;
-        NassaContext context = (NassaContext) Main.getApplicationMenu().getApplicationContext();
+        NassaContext context = (NassaContext) service.getContext();
         while(!context.getCanAccessShipsCache()) Thread.currentThread().wait(1000);
         context.setCanAccessShipsCache(false);
         result = m.invoke(service, args);

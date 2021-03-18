@@ -1,6 +1,7 @@
 package com.epam.jwd.core_final.criteria;
 
 import com.epam.jwd.core_final.domain.*;
+import com.epam.jwd.core_final.exception.UnknownEntityException;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -28,7 +29,7 @@ public class SpaceshipCriteria extends Criteria<Spaceship> {
         return new SpaceshipCriteria().new SpaceshipCriteriaBuilder();
     }
 
-    public static Criteria<Spaceship> parseCriteria(String line) throws IllegalArgumentException {
+    public static Criteria<Spaceship> parseCriteria(String line) throws IllegalArgumentException, UnknownEntityException {
         SpaceshipCriteriaBuilder builder = newBuilder();
 
         String[] args = line.split(";");
@@ -37,6 +38,8 @@ public class SpaceshipCriteria extends Criteria<Spaceship> {
             String[] pair = s.split("=");
 
             if (pair[0].equalsIgnoreCase("crew")) {
+                if(pair[1].charAt(0) != '{' || pair[1].charAt(pair[1].length() - 1) != '}')
+                    throw new IllegalArgumentException("crew must follow the pattern: {roleId:count,roleId:count,...}");
                 pair[1] = pair[1].substring(1, pair[1].length() - 1);
                 String[] mapPairs = pair[1].split(",");
                 Map<Role, Short> crewMap = new TreeMap<>();
@@ -53,6 +56,8 @@ public class SpaceshipCriteria extends Criteria<Spaceship> {
                 builder = (SpaceshipCriteriaBuilder) builder.setName(pair[1]);
             } else if (pair[0].equalsIgnoreCase("id")) {
                 builder = (SpaceshipCriteriaBuilder) builder.setId(Long.parseLong(pair[1]));
+            } else{
+                throw new IllegalArgumentException("Unknown field - " + pair[0]);
             }
         }
         return builder.build();
@@ -80,6 +85,7 @@ public class SpaceshipCriteria extends Criteria<Spaceship> {
         }
 
         public SpaceshipCriteriaBuilder setFlightDistance(Long distance) {
+            if (distance < 0) throw new IllegalArgumentException("flight distance must be positive");
             SpaceshipCriteria.this.flightDistance = distance;
             return this;
         }

@@ -3,6 +3,7 @@ package com.epam.jwd.core_final.criteria;
 import com.epam.jwd.core_final.domain.CrewMember;
 import com.epam.jwd.core_final.domain.Rank;
 import com.epam.jwd.core_final.domain.Role;
+import com.epam.jwd.core_final.exception.UnknownEntityException;
 
 /**
  * Should be a builder for {@link com.epam.jwd.core_final.domain.CrewMember} fields
@@ -27,7 +28,7 @@ public class CrewMemberCriteria extends Criteria<CrewMember> {
         return new CrewMemberCriteria().new CrewMemberCriteriaBuilder();
     }
 
-    public static Criteria<CrewMember> parseCriteria(String line) throws IllegalArgumentException {
+    public static Criteria<CrewMember> parseCriteria(String line) throws IllegalArgumentException, UnknownEntityException {
         CrewMemberCriteriaBuilder builder = newBuilder();
 
         String[] args = line.split(";");
@@ -44,6 +45,8 @@ public class CrewMemberCriteria extends Criteria<CrewMember> {
                 builder = (CrewMemberCriteriaBuilder) builder.setName(pair[1]);
             } else if (pair[0].equalsIgnoreCase("id")) {
                 builder = (CrewMemberCriteriaBuilder) builder.setId(Long.parseLong(pair[1]));
+            } else{
+                throw new IllegalArgumentException("Unknown field - " + pair[0]);
             }
         }
         return builder.build();

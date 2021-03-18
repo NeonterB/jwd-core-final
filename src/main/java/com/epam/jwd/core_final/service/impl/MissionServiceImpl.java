@@ -5,7 +5,6 @@ import com.epam.jwd.core_final.context.ApplicationContext;
 import com.epam.jwd.core_final.criteria.Criteria;
 import com.epam.jwd.core_final.domain.*;
 import com.epam.jwd.core_final.exception.EntityExistsException;
-import com.epam.jwd.core_final.exception.EntityNotFoundException;
 import com.epam.jwd.core_final.exception.EntityOccupiedException;
 import com.epam.jwd.core_final.service.MissionService;
 
@@ -17,9 +16,11 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 public class MissionServiceImpl implements MissionService {
-    private static final MissionServiceImpl instance = new MissionServiceImpl();
+    private static final MissionServiceImpl instance = new MissionServiceImpl(Main.getApplicationMenu().getApplicationContext());
+    private final ApplicationContext context;
 
-    private MissionServiceImpl() {
+    private MissionServiceImpl(ApplicationContext context) {
+        this.context = context;
     }
 
     public static MissionServiceImpl getInstance() {
@@ -27,16 +28,17 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
-    public Collection<FlightMission> findAllMissions() throws EntityNotFoundException {
-        Collection<FlightMission> missions = (Collection<FlightMission>) Main.getApplicationMenu().getApplicationContext()
-                .retrieveBaseEntityList(FlightMission.class);
-        if (missions.isEmpty()) throw new EntityNotFoundException("Missions cache is empty");
-        return missions;
+    public ApplicationContext getContext() {
+        return context;
+    }
+
+    @Override
+    public Collection<FlightMission> findAllMissions() {
+        return (Collection<FlightMission>) context.retrieveBaseEntityList(FlightMission.class);
     }
 
     @Override
     public Collection<FlightMission> findAllMissionsByCriteria(Criteria<FlightMission> criteria) {
-        ApplicationContext context = Main.getApplicationMenu().getApplicationContext();
         return ((Collection<FlightMission>) context.retrieveBaseEntityList(FlightMission.class)).stream()
                 .filter(criteria::meetsCriteria).collect(Collectors.toList());
     }
@@ -84,8 +86,7 @@ public class MissionServiceImpl implements MissionService {
 
     @Override
     public FlightMission createMission(FlightMission flightMission) throws EntityExistsException {
-        Collection<FlightMission> missions = (Collection<FlightMission>) Main.getApplicationMenu().getApplicationContext()
-                .retrieveBaseEntityList(FlightMission.class);
+        Collection<FlightMission> missions = (Collection<FlightMission>) context.retrieveBaseEntityList(FlightMission.class);
         if (!missions.add(flightMission)) throw new EntityExistsException(flightMission);
         return flightMission;
     }

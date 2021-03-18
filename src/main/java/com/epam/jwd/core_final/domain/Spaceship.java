@@ -15,9 +15,10 @@ public class Spaceship extends AbstractBaseEntity {
     private Long flightDistance;
     private Boolean isReadyForNextMission = true;
 
-    Spaceship(@NotNull String name, Long flightDistance, Map<Role, Short> crew) {
+    Spaceship(@NotNull String name, Long flightDistance, Map<Role, Short> crew) throws IllegalArgumentException{
         super(name);
         this.crew = crew;
+        if (flightDistance < 0) throw new IllegalArgumentException("flight distance must be positive");
         this.flightDistance = flightDistance;
     }
 

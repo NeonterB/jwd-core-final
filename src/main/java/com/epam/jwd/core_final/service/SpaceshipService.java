@@ -1,5 +1,6 @@
 package com.epam.jwd.core_final.service;
 
+import com.epam.jwd.core_final.context.ApplicationContext;
 import com.epam.jwd.core_final.context.MethodInfo;
 import com.epam.jwd.core_final.criteria.Criteria;
 import com.epam.jwd.core_final.domain.Spaceship;
@@ -15,6 +16,7 @@ import java.util.Optional;
  * You have to use streamAPI for filtering, mapping, collecting, iterating
  */
 public interface SpaceshipService {
+    ApplicationContext getContext();
 
     @MethodInfo(menuPosition = 1, description = "Find all spaceships")
     Collection<Spaceship> findAllSpaceships();
